@@ -8,4 +8,5 @@ package com.charles.na.common;
  */
 public class Constant {
     public static int TITLE_WEIGHT = 5;
+    //hello,dog
 }

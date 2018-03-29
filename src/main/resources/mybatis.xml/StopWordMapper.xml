@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.charles.na.mapper.StopWordMapper">
+
+    <!-- 定义User类型 -->
+    <resultMap type="Words" id="StopWordResult">
+        <result property="id" column="id"/>
+        <result property="word" column="word"/>
+    </resultMap>
+
+    <!--按照id查询记录-->
+    <select id="findAll" resultMap="StopWordResult">
+        SELECT * FROM t_stop_words
+    </select>
+
+
+</mapper>

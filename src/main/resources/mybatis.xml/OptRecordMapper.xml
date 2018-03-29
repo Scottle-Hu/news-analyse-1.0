@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.charles.na.mapper.OptRecordMapper">
+
+    <!-- 定义User类型 -->
+    <resultMap type="OptRecord" id="baseResult">
+        <result property="id" column="id"/>
+        <result property="opt" column="opt"/>
+        <result property="time" column="time"/>
+        <result property="optNum" column="opt_num"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <!--插入记录-->
+    <insert id="insert" parameterType="OptRecord">
+        INSERT INTO t_opt_record VALUES (#{id},#{opt},#{time},#{optNum},#{status})
+    </insert>
+
+    <!--根据id查找记录-->
+    <select id="findById" parameterType="java.lang.String" resultType="OptRecord">
+        SELECT * FROM t_opt_record WHERE id=#{_param}
+    </select>
+
+
+</mapper>

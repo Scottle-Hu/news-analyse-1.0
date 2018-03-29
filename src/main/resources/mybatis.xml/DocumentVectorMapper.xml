@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.charles.na.mapper.DocumentVectorMapper">
+
+    <!-- 定义User类型 -->
+    <resultMap type="DocumentVector" id="baseResult">
+        <result property="id" column="id"/>
+        <result property="newsId" column="news_id"/>
+        <result property="vector" column="vector"/>
+        <result property="date" column="date"/>
+    </resultMap>
+
+    <!--插入记录-->
+    <insert id="insert" parameterType="DocumentVector">
+        INSERT INTO t_document_vector VALUES (#{id},#{newsId},#{vector},#{date})
+    </insert>
+
+    <!--根据id查找记录-->
+    <select id="findById" parameterType="java.lang.String" resultType="DocumentVector">
+        SELECT * FROM t_document_vector WHERE id=#{_param}
+    </select>
+
+    <!--根据新闻id查找记录-->
+    <select id="findByNewsId" parameterType="java.lang.String" resultType="DocumentVector">
+        SELECT * FROM t_document_vector WHERE news_id=#{_param}
+    </select>
+
+
+</mapper>

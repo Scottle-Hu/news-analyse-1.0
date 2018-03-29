@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.charles.na.mapper.NewsMapper">
+
+    <!-- 定义User类型 -->
+    <resultMap type="News" id="NewsResult">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="time" column="time"/>
+        <result property="source" column="source"/>
+        <result property="content" column="content"/>
+        <result property="keywords" column="keywords"/>
+        <result property="visitNum" column="visit_num"/>
+        <result property="remarkNum" column="remark_num"/>
+        <result property="url" column="url"/>
+        <result property="catchTime" column="catch_time"/>
+    </resultMap>
+
+    <!--按照id查询记录-->
+    <select id="findById" parameterType="java.lang.String" resultType="News">
+      SELECT * FROM t_news WHERE id=#{_param}
+    </select>
+
+    <!--分页查询-->
+    <select id="findByPage" parameterType="java.util.Map" resultMap="NewsResult">
+        SELECT * FROM t_news LIMIT #{pageNo},#{pageSize}
+    </select>
+
+
+</mapper>

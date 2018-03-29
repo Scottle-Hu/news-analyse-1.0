@@ -25,7 +25,7 @@ import java.util.Map;
  * @since 1.0
  */
 @Service("newsSOAService")
-public class newsSOAServiceImpl implements INewsSOAService {
+public class NewsSOAServiceImpl implements INewsSOAService {
 
     @Resource
     private INewsService newsService;
@@ -47,8 +47,8 @@ public class newsSOAServiceImpl implements INewsSOAService {
             pageInfo.put("pageSize", PAGE_SIZE);
             List<News> newsList = newsService.findByPage(pageInfo);
             while (newsList != null && newsList.size() > 0) {
-                totalNum += newsList.size();
                 for (News news : newsList) {
+                    totalNum += 1; //记录
                     DocumentVector dv = new DocumentVector();
                     dv.setId(IDUtil.generateID());
                     dv.setNewsId(news.getId());
@@ -60,7 +60,7 @@ public class newsSOAServiceImpl implements INewsSOAService {
                     vector = vector.substring(0, vector.length() - 1) + ")";
                     dv.setVector(vector);
                     dv.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-                    //插入文本向量的一个维度
+                    //插入文本向量
                     documentVectorMapper.insert(dv);
                 }
                 pageInfo.put("pageNo", pageInfo.get("pageNo") + PAGE_SIZE);

@@ -16,6 +16,8 @@ public class OptRecord {
 
     private int optNum;
 
+    private String costTime;
+
     private int status;
 
     public String getId() {
@@ -48,6 +50,14 @@ public class OptRecord {
 
     public void setOptNum(int optNum) {
         this.optNum = optNum;
+    }
+
+    public String getCostTime() {
+        return costTime;
+    }
+
+    public void setCostTime(String costTime) {
+        this.costTime = costTime;
     }
 
     public int getStatus() {

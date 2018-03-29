@@ -11,17 +11,28 @@
         <result property="opt" column="opt"/>
         <result property="time" column="time"/>
         <result property="optNum" column="opt_num"/>
+        <result property="costTime" column="cost_time"/>
         <result property="status" column="status"/>
     </resultMap>
 
     <!--插入记录-->
     <insert id="insert" parameterType="OptRecord">
-        INSERT INTO t_opt_record VALUES (#{id},#{opt},#{time},#{optNum},#{status})
+        INSERT INTO t_opt_record VALUES (#{id},#{opt},#{time},#{optNum},#{costTime},#{status})
     </insert>
 
     <!--根据id查找记录-->
     <select id="findById" parameterType="java.lang.String" resultType="OptRecord">
         SELECT * FROM t_opt_record WHERE id=#{_param}
+    </select>
+
+    <!--分页查询-->
+    <select id="findByPage" resultMap="baseResult" parameterType="java.util.Map">
+        SELECT * FROM t_opt_record LIMIT #{pageNo},#{pageSize}
+    </select>
+
+    <!--查询所有-->
+    <select id="findAll" resultMap="baseResult">
+        SELECT * FROM t_opt_record
     </select>
 
 

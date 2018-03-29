@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * @author 李紫宸
  * @create 2018/3/29
- * @description 向量工具类
+ * @description 向量服务类
  * @since 1.0
  */
 public class VectorServiceImpl implements IVectorService {

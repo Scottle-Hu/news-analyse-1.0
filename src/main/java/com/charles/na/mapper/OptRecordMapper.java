@@ -4,6 +4,7 @@ import com.charles.na.model.DocumentVector;
 import com.charles.na.model.OptRecord;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Charles
@@ -18,7 +19,20 @@ public interface OptRecordMapper {
      * @return
      * @description 根据id查询
      */
-    DocumentVector findById(String id);
+    OptRecord findById(String id);
+
+    /**
+     * @return
+     * @description 查询所有操作记录
+     */
+    List<OptRecord> findAll();
+
+    /**
+     * @param map
+     * @return
+     * @description 分页查询
+     */
+    List<OptRecord> findByPage(Map<String, Integer> map);
 
     /**
      * @param or

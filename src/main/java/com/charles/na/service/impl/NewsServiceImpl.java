@@ -75,7 +75,7 @@ public class NewsServiceImpl implements INewsService {
                 result.put(wordStr, result.get(wordStr) + 1);
             }
         }
-        System.out.println("文章"+id+" 文档向量创建完毕");
+        System.out.println("文章" + id + " 文档向量创建完毕");
         return result;
     }
 

@@ -18,7 +18,6 @@ public class NewsSOAServiceTest {
     @Resource
     private INewsSOAService newsSOAService;
 
-
     @Test
     public void test01() throws IOException {
         newsSOAService.split();

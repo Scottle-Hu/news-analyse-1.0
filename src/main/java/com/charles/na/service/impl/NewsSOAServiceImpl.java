@@ -48,20 +48,33 @@ public class NewsSOAServiceImpl implements INewsSOAService {
             List<News> newsList = newsService.findByPage(pageInfo);
             while (newsList != null && newsList.size() > 0) {
                 for (News news : newsList) {
-                    totalNum += 1; //记录
-                    DocumentVector dv = new DocumentVector();
-                    dv.setId(IDUtil.generateID());
-                    dv.setNewsId(news.getId());
-                    Map<String, Integer> map = newsService.splitById(news.getId());
-                    String vector = "(";
-                    for (Map.Entry<String, Integer> e : map.entrySet()) {
-                        vector = vector + e.getKey() + ":" + e.getValue() + " ";
+                    try {
+                        totalNum += 1; //记录
+                        DocumentVector dv = new DocumentVector();
+                        dv.setId(IDUtil.generateID());
+                        dv.setNewsId(news.getId());
+                        Map<String, Integer> map = newsService.splitById(news.getId());
+                        String vector = "(";
+                        for (Map.Entry<String, Integer> e : map.entrySet()) {
+                            vector = vector + e.getKey() + ":" + e.getValue() + " ";
+                        }
+                        vector = vector.substring(0, vector.length() - (vector.length() > 1 ? 1 : 0)) + ")";
+                        dv.setVector(vector);
+                        dv.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                        //插入文本向量
+                        documentVectorMapper.insert(dv);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        System.out.println("在创建文本" + news.getId() + "时出现问题");
+                        //将单次失败记录写入数据库
+//                        OptRecord optRecord = new OptRecord();
+//                        optRecord.setId(IDUtil.generateID());
+//                        optRecord.setOpt("建立文档" + news.getId() + "的向量模型失败");
+//                        optRecord.setOptNum(1);
+//                        optRecord.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+//                        optRecord.setStatus(0);
+//                        optRecordMapper.insert(optRecord);
                     }
-                    vector = vector.substring(0, vector.length() - 1) + ")";
-                    dv.setVector(vector);
-                    dv.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-                    //插入文本向量
-                    documentVectorMapper.insert(dv);
                 }
                 pageInfo.put("pageNo", pageInfo.get("pageNo") + PAGE_SIZE);
                 newsList = newsService.findByPage(pageInfo);
@@ -79,13 +92,13 @@ public class NewsSOAServiceImpl implements INewsSOAService {
         } catch (Exception e) {
             e.printStackTrace();
             //将操作失败的记录写入数据库
-            OptRecord optRecord = new OptRecord();
-            optRecord.setId(IDUtil.generateID());
-            optRecord.setOpt("建立文档向量模型");
-            optRecord.setOptNum(totalNum);
-            optRecord.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-            optRecord.setStatus(0);
-            optRecordMapper.insert(optRecord);
+//            OptRecord optRecord = new OptRecord();
+//            optRecord.setId(IDUtil.generateID());
+//            optRecord.setOpt("建立文档向量模型");
+//            optRecord.setOptNum(totalNum);
+//            optRecord.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+//            optRecord.setStatus(0);
+//            optRecordMapper.insert(optRecord);
         }
     }
 

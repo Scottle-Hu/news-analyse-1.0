@@ -8,6 +8,14 @@ package com.charles.na.service;
  */
 public interface INewsSOAService {
 
+    /**
+     * 新闻内容分词
+     */
     void split();
+
+    /**
+     * 新闻文本聚类
+     */
+    void cluster();
 
 }

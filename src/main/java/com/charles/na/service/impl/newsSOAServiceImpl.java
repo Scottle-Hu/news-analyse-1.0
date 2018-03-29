@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * @author Charles
  * @create 2018/3/28
- * @description 分词服务实现
+ * @description 新闻相关分析soa服务实现
  * @since 1.0
  */
 @Service("newsSOAService")
@@ -87,6 +87,10 @@ public class newsSOAServiceImpl implements INewsSOAService {
             optRecord.setStatus(0);
             optRecordMapper.insert(optRecord);
         }
+    }
+
+    public void cluster() {
+        //TODO 文本聚类实现
 
     }
 }

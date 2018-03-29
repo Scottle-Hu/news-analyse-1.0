@@ -9,5 +9,4 @@ package com.charles.na.common;
 //scottle-hu  hqj19971225
 public class Constant {
     public static int TITLE_WEIGHT = 5;
-    //hello,dog
 }

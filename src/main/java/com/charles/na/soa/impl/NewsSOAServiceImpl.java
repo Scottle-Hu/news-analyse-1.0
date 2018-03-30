@@ -1,11 +1,11 @@
-package com.charles.na.service.impl;
+package com.charles.na.soa.impl;
 
 import com.charles.na.mapper.DocumentVectorMapper;
 import com.charles.na.mapper.OptRecordMapper;
 import com.charles.na.model.DocumentVector;
 import com.charles.na.model.News;
 import com.charles.na.model.OptRecord;
-import com.charles.na.service.INewsSOAService;
+import com.charles.na.soa.INewsSOAService;
 import com.charles.na.service.INewsService;
 import com.charles.na.utils.IDUtil;
 import com.charles.na.utils.TimeUtil;
@@ -38,7 +38,7 @@ public class NewsSOAServiceImpl implements INewsSOAService {
 
     private static int PAGE_SIZE = 100;
 
-    public void split() {
+    public void vector() {
         int totalNum = 0;
         try {
             long start = System.currentTimeMillis();

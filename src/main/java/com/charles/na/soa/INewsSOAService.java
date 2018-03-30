@@ -1,4 +1,4 @@
-package com.charles.na.service;
+package com.charles.na.soa;
 
 /**
  * @author Charles
@@ -9,9 +9,9 @@ package com.charles.na.service;
 public interface INewsSOAService {
 
     /**
-     * 新闻内容分词
+     * 新闻内容分词，建立文本向量
      */
-    void split();
+    void vector ();
 
     /**
      * 新闻文本聚类

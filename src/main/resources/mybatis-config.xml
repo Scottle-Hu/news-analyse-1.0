@@ -1,10 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE configuration
-PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-	<!-- 别名 -->
-	<typeAliases>
-		<package name="com.charles.na.model"/>
-	</typeAliases>
+
+    <!--数据库连接超时的配置,单位是s-->
+    <settings>
+        <setting name="defaultStatementTimeout" value="20"/>
+    </settings>
+
+    <!-- 别名 -->
+    <typeAliases>
+        <package name="com.charles.na.model"/>
+    </typeAliases>
+
 </configuration>

@@ -55,4 +55,14 @@ public class DocumentVector {
     public void setDate(String date) {
         this.date = date;
     }
+
+    @Override
+    public String toString() {
+        return "DocumentVector{" +
+                "id='" + id + '\'' +
+                ", newsId='" + newsId + '\'' +
+                ", vector='" + vector + '\'' +
+                ", date='" + date + '\'' +
+                '}';
+    }
 }

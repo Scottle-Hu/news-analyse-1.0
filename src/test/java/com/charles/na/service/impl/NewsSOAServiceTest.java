@@ -18,7 +18,7 @@ public class NewsSOAServiceTest {
 
     @Test
     public void test01() throws IOException {
-        newsSOAService.split();
+        newsSOAService.vector();
     }
 
 }

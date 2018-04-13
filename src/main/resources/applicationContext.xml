@@ -16,6 +16,7 @@
     <!-- 自动扫描 -->
     <context:component-scan base-package="com.charles.na.mapper"/>
     <context:component-scan base-package="com.charles.na.service"/>
+    <context:component-scan base-package="com.charles.na.soa"/>
 
     <!-- 配置数据源 -->
     <bean id="dataSource"

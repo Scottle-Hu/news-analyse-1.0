@@ -28,4 +28,10 @@ public interface INewsService {
      */
     List<News> findByPage(Map<String, Integer> map);
 
+    /**
+     * @return
+     * @description 查询新闻条数
+     */
+    int queryNum();
+
 }

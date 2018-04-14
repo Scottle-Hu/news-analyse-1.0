@@ -34,14 +34,12 @@ public class APIController {
         if (!SignUtil.generateSign(token).equals(sign)) {
             response.getOutputStream().write(FAILURE.getBytes("utf-8"));
         }
-        //另开一个线程执行预处理操作，操作成功会将操作记录写入数据库
-        new Thread() {
-            @Override
-            public void run() {
-                newsSOAService.vector();
-            }
-        }.start();
-        response.getOutputStream().write(SUCCESS.getBytes("utf-8"));
+        boolean result = newsSOAService.vector();
+        if (result) {
+            response.getOutputStream().write(SUCCESS.getBytes("utf-8"));
+        } else {
+            response.getOutputStream().write(FAILURE.getBytes("utf-8"));
+        }
     }
 
 

@@ -11,7 +11,7 @@ public interface INewsSOAService {
     /**
      * 新闻内容分词，建立文本向量
      */
-    void vector ();
+    boolean vector ();
 
     /**
      * 新闻文本聚类

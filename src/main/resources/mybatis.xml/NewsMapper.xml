@@ -28,5 +28,10 @@
         SELECT * FROM t_news LIMIT #{pageNo},#{pageSize}
     </select>
 
+    <!--查询新闻条数-->
+    <select id="queryNum" resultType="Integer">
+        SELECT COUNT(*) FROM t_news
+    </select>
+
 
 </mapper>

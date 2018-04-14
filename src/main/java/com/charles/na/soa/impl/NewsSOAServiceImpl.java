@@ -3,22 +3,18 @@ package com.charles.na.soa.impl;
 import com.charles.na.common.Constant;
 import com.charles.na.mapper.DocumentVectorMapper;
 import com.charles.na.mapper.OptRecordMapper;
-import com.charles.na.model.DocumentVector;
-import com.charles.na.model.News;
-import com.charles.na.model.OptRecord;
 import com.charles.na.soa.INewsSOAService;
 import com.charles.na.service.INewsService;
-import com.charles.na.utils.IDUtil;
-import com.charles.na.utils.TimeUtil;
+import com.charles.na.soa.impl.thread.BuildDocumentVectorThread;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.Map;
 
 /**
@@ -32,6 +28,16 @@ public class NewsSOAServiceImpl implements INewsSOAService {
 
     private Logger LOGGER = Logger.getLogger(NewsSOAServiceImpl.class);
 
+    /**
+     * 线程池，用于分页分别执行任务（注意：用在数据之间没有关联的情况下）
+     */
+    private static ExecutorService pools = Executors.newFixedThreadPool(Constant.MAX_THREAD_NUM);
+
+    /**
+     * 记录当前正在分页执行文本向量建立任务的线程数目
+     */
+    public static volatile int currentVectorThreadNum;
+
     @Resource
     private INewsService newsService;
 
@@ -41,55 +47,37 @@ public class NewsSOAServiceImpl implements INewsSOAService {
     @Resource
     private OptRecordMapper optRecordMapper;
 
-    private static int PAGE_SIZE = 50;
+    private static int PAGE_SIZE = 100;
 
-    public void vector() {
-        int totalNum = 0;
+    public boolean vector() {
+        if (currentVectorThreadNum > 0) { //上次的任务未执行完成
+            return false;
+        }
         try {
             long start = System.currentTimeMillis();
-            Map<String, Integer> pageInfo = new HashMap<String, Integer>();
-            pageInfo.put("pageNo", 0);
-            pageInfo.put("pageSize", PAGE_SIZE);
-            List<News> newsList = null;
-            newsList = queryDBToGetNews(pageInfo);
-            while (newsList != null && newsList.size() > 0) {
-                for (News news : newsList) {
-                    try {
-                        totalNum += 1; //记录
-                        DocumentVector dv = new DocumentVector();
-                        dv.setId(IDUtil.generateID());
-                        dv.setNewsId(news.getId());
-                        Map<String, Integer> map = newsService.splitById(news.getId());
-                        String vector = "(";
-                        for (Map.Entry<String, Integer> e : map.entrySet()) {
-                            vector = vector + e.getKey() + ":" + e.getValue() + " ";
-                        }
-                        vector = vector.substring(0, vector.length() - (vector.length() > 1 ? 1 : 0)) + ")";
-                        dv.setVector(vector);
-                        dv.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-                        //插入文本向量，同样使用失败重连机制
-                        queryDBToInsertVector(dv);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                        LOGGER.error("在创建文本" + news.getId() + "时出现问题");
-                    }
-                }
-                pageInfo.put("pageNo", pageInfo.get("pageNo") + PAGE_SIZE);
-                newsList = queryDBToGetNews(pageInfo);
+            int newsNum = newsService.queryNum();
+            int pageNum = newsNum / PAGE_SIZE + (newsNum % PAGE_SIZE == 0 ? 0 : 1);
+            currentVectorThreadNum = pageNum;
+            for (int n = 0; n < pageNum; n++) {
+                Map<String, Integer> pageInfo = new HashMap<String, Integer>();
+                pageInfo.put("pageNo", n * PAGE_SIZE);
+                pageInfo.put("pageSize", PAGE_SIZE);
+                BuildDocumentVectorThread thread = new BuildDocumentVectorThread(pageInfo);
+                thread.setDocumentVectorMapper(documentVectorMapper);
+                thread.setNewsService(newsService);
+                thread.setOptRecordMapper(optRecordMapper);
+                //提交线程池运行
+                pools.execute(thread);
             }
-            long end = System.currentTimeMillis();
-            LOGGER.info("本次文档向量建立过程耗费时间：" + TimeUtil.convertMillis2String(end - start));
-            //将操作成功的记录写入数据库
-            OptRecord optRecord = new OptRecord();
-            optRecord.setId(IDUtil.generateID());
-            optRecord.setOpt("建立文档向量模型");
-            optRecord.setOptNum(totalNum);
-            optRecord.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-            optRecord.setStatus(1);
-            queryDBToInsertLog(optRecord);
+            // TODO 创建统计线程，统计运行时间
+
+//            //测试的时候为了防止程序整体退出
+//            new Scanner(System.in).next();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("文档向量创建处理失败，已完成:" + totalNum);
+            LOGGER.error("文档向量创建处理失败");
+            return false;
         }
     }
 
@@ -98,74 +86,10 @@ public class NewsSOAServiceImpl implements INewsSOAService {
 
     }
 
-    /**
-     * @param pageInfo
-     * @return
-     * @description 封装查询数据库的时候失败重连的代码
-     */
-    private List<News> queryDBToGetNews(Map pageInfo) throws Exception {
-        //当数据库出现连接异常时尝试重新连接
-        boolean tryAgin = true;
-        int tryNum = 0;
-        List<News> newsList = null;
-        while (tryAgin && tryNum < Constant.TRY_MAX) {
-            try {
-                newsList = newsService.findByPage(pageInfo);
-                return newsList;
-            } catch (Exception e) {
-                e.printStackTrace();
-                tryNum++;
-                try {
-                    Thread.sleep(Constant.WAIT_MILLIS);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        }
-        LOGGER.error("查询news失败：" + pageInfo);
-        throw new Exception();
+    @PreDestroy
+    public void destroy() {
+        //关闭线程池
+        pools.shutdown();
     }
 
-    private void queryDBToInsertVector(DocumentVector dv) throws Exception {
-        //当数据库出现连接异常时尝试重新连接
-        boolean tryAgin = true;
-        int tryNum = 0;
-        while (tryAgin && tryNum < Constant.TRY_MAX) {
-            try {
-                documentVectorMapper.insert(dv);
-                return;
-            } catch (Exception e) {
-                e.printStackTrace();
-                tryNum++;
-                try {
-                    Thread.sleep(Constant.WAIT_MILLIS);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        }
-        //插入失败，打印日志
-        LOGGER.error("插入文档向量到数据库失败！" + dv);
-        throw new Exception();   //抛出异常给调用方法catch
-    }
-
-    private void queryDBToInsertLog(OptRecord optRecord) {
-        boolean tryAgin = true;
-        int tryNum = 0;
-        while (tryAgin && tryNum < Constant.TRY_MAX) {
-            try {
-                optRecordMapper.insert(optRecord);
-                return;
-            } catch (Exception e) {
-                e.printStackTrace();
-                tryNum++;
-                try {
-                    Thread.sleep(Constant.WAIT_MILLIS);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        }
-        LOGGER.error("插入操作日志到数据库失败！" + optRecord);
-    }
 }

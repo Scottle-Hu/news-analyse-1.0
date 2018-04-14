@@ -18,14 +18,9 @@
     <context:component-scan base-package="com.charles.na.service"/>
     <context:component-scan base-package="com.charles.na.soa"/>
 
-    <!-- 配置数据源 -->
-    <bean id="dataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://122.114.206.52:3306/db_news_analyse?characterEncoding=utf8"/>
-        <property name="username" value="root"/>
-        <property name="password" value="ssgxhn$$$2018"/>
-    </bean>
+
+    <!-- 使用druid引入配置数据源 -->
+    <import resource="druid.xml"/>
 
     <!-- 配置mybatis的sqlSessionFactory -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

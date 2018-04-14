@@ -53,4 +53,10 @@ public interface NewsMapper {
      */
     int deleteById(String id);
 
+    /**
+     * @return
+     * @description 查询新闻条数
+     */
+    int queryNum();
+
 }

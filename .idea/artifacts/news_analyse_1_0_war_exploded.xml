@@ -32,6 +32,7 @@
           <element id="library" level="project" name="Maven: commons-io:commons-io:2.4" />
           <element id="library" level="project" name="Maven: org.aspectj:aspectjweaver:1.8.10" />
           <element id="library" level="project" name="Maven: com.chenlb.mmseg4j:mmseg4j-core:1.10.0" />
+          <element id="library" level="project" name="Maven: com.alibaba:druid:1.0.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">

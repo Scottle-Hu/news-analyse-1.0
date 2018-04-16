@@ -3,6 +3,7 @@ package com.charles.na.mapper;
 import com.charles.na.model.DocumentVector;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Charles
@@ -32,4 +33,17 @@ public interface DocumentVectorMapper {
      * @description 插入记录
      */
     int insert(DocumentVector dv);
+
+    /**
+     * @param map
+     * @return
+     * @description 分页查询
+     */
+    List<DocumentVector> findByPageInfo(Map<String, Integer> map);
+
+    /**
+     * @return
+     * @description 查询总记录条数
+     */
+    int queryNum();
 }

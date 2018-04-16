@@ -1,5 +1,7 @@
 package com.charles.na.service;
 
+import com.charles.na.model.DocumentVector;
+
 import java.util.Map;
 
 /**
@@ -10,7 +12,7 @@ import java.util.Map;
  */
 public interface IVectorService {
 
-    double calSimilarity(Map<String, Integer> v1, Map<String, Integer> v2);
+    double calSimilarity(DocumentVector v1, DocumentVector v2);
 
     double calSynonym(String word1, String word2);
 }

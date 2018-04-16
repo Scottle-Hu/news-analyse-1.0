@@ -28,5 +28,14 @@
         SELECT * FROM t_document_vector WHERE news_id=#{_param}
     </select>
 
+    <!--根据分页查询-->
+    <select id="findByPageInfo" parameterMap="java.util.Map" resultMap="baseResult">
+        SELECT * FROM t_document_vector LIMIT #{pageNo},#{pageSize}
+    </select>
+
+    <!--获取总数量-->
+    <select id="queryNum" resultType="Integer">
+        SELECT count(*) FROM t_document_vector
+    </select>
 
 </mapper>

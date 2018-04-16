@@ -83,13 +83,22 @@ public class NewsSOAServiceImpl implements INewsSOAService {
 
     public void cluster() {
         //TODO 文本聚类实现
+        /**
+         * 文本聚类的算法：
+         * ①通过canopy算法得到聚类的类别个数n
+         * ②根据上一步得到的聚类个数，使用k-means算法得到细化的聚类结果
+         * ③提取出每个聚类的主题，并将聚类写入数据库
+         */
+
 
     }
 
     @PreDestroy
     public void destroy() {
         //关闭线程池
-        pools.shutdown();
+        if (pools != null) {
+            pools.shutdown();
+        }
     }
 
 }

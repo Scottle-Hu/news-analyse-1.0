@@ -29,7 +29,7 @@
     </select>
 
     <!--根据分页查询-->
-    <select id="findByPageInfo" parameterMap="java.util.Map" resultMap="baseResult">
+    <select id="findByPageInfo" parameterType="java.util.Map" resultMap="baseResult">
         SELECT * FROM t_document_vector LIMIT #{pageNo},#{pageSize}
     </select>
 

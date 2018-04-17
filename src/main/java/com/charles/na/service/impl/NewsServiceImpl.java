@@ -51,7 +51,7 @@ public class NewsServiceImpl implements INewsService {
         System.out.println("=====结束加载停用词表到内存====");
     }
 
-    public synchronized Map<String, Integer> splitById(String id) throws IOException {
+    public Map<String, Integer> splitById(String id) throws IOException {
         Map<String, Integer> result = new HashMap<String, Integer>();
         News news = newsMapper.findById(id);
         String content = news.getContent();

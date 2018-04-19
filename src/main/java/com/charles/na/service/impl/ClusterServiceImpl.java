@@ -48,12 +48,17 @@ public class ClusterServiceImpl implements IClusterService {
             Map<DocumentVector, Set<DocumentVector>> cluster = new HashMap<DocumentVector, Set<DocumentVector>>();
             //聚类的中心文本向量的id
             Set<String> removeSet = new HashSet<String>();
-            while (removeSet.size() < newsTotalNum) {  //迭代直到所有点都被移除
+            int iterateNum = 0;
+            while (iterateNum < 100 && removeSet.size() < newsTotalNum) {  //迭代直到所有点都被移除
+                iterateNum++;
+                System.out.println("已经迭代次数：" + iterateNum);
+                System.out.println("已经移除的点：" + removeSet.size());
                 Map<String, Integer> pageInfo = new HashMap<String, Integer>();
                 pageInfo.put("pageNo", 0);
                 pageInfo.put("pageSize", PAGE_SIZE);
                 List<DocumentVector> vectorList = documentVectorMapper.findByPageInfo(pageInfo);
                 while (true) {  //防止内存占满出错，分页取向量记录
+                    System.out.println("分页：" + pageInfo.get("pageNo"));
                     if (vectorList == null || vectorList.size() <= 0) {
                         break;
                     }

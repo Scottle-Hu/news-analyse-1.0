@@ -21,4 +21,6 @@ public interface IClusterService {
      * @description 使用k-means算法细化聚类并写入数据库
      */
     void kMeans(List<DocumentVector> centerList);
+
+    List<DocumentVector> canopyForTest();
 }

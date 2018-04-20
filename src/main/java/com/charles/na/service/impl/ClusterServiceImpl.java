@@ -22,9 +22,10 @@ public class ClusterServiceImpl implements IClusterService {
 
     private Logger LOGGER = Logger.getLogger(ClusterServiceImpl.class);
 
-    private static double T1 = 0.6;
+    //注意：在平面距离聚类中，T1>t2，说的是距离，但是在这里向量距离越小，反而相似度越高
+    private static double T1 = 0.05;
 
-    private static double T2 = 0.3;
+    private static double T2 = 0.15;
 
     private static int PAGE_SIZE = 100;
 
@@ -44,48 +45,64 @@ public class ClusterServiceImpl implements IClusterService {
         //分页读取新闻数据并进行canopy聚类
         try {
             int newsTotalNum = documentVectorMapper.queryNum();
+            System.out.println("新闻总数:" + newsTotalNum);
             //聚类：中心向量 -> 该聚类的向量集合
             Map<DocumentVector, Set<DocumentVector>> cluster = new HashMap<DocumentVector, Set<DocumentVector>>();
             //聚类的中心文本向量的id
             Set<String> removeSet = new HashSet<String>();
             int iterateNum = 0;
-            while (iterateNum < 100 && removeSet.size() < newsTotalNum) {  //迭代直到所有点都被移除
+            while (removeSet.size() < newsTotalNum) {  //迭代直到所有点都被移除
                 iterateNum++;
                 System.out.println("已经迭代次数：" + iterateNum);
                 System.out.println("已经移除的点：" + removeSet.size());
+                //先找到第一个没有移除的点作为聚类中心
+                DocumentVector c = null;
                 Map<String, Integer> pageInfo = new HashMap<String, Integer>();
                 pageInfo.put("pageNo", 0);
                 pageInfo.put("pageSize", PAGE_SIZE);
                 List<DocumentVector> vectorList = documentVectorMapper.findByPageInfo(pageInfo);
-                while (true) {  //防止内存占满出错，分页取向量记录
-                    System.out.println("分页：" + pageInfo.get("pageNo"));
-                    if (vectorList == null || vectorList.size() <= 0) {
+                while (vectorList != null && vectorList.size() > 0) {
+                    boolean foundCenter = false;
+                    for (DocumentVector v : vectorList) {
+                        String id = v.getId();
+                        if (!removeSet.contains(id)) {
+                            c = v;
+                            removeSet.add(id);
+                            foundCenter = true;
+                            break;
+                        }
+                    }
+                    if (foundCenter) {
                         break;
                     }
-                    int size = vectorList.size();
-                    for (int i = 0; i < size; i++) {
-                        final DocumentVector dv = vectorList.get(i);
-                        if (removeSet.contains(vectorList.get(i).getId())) {  //已被移除
+                    //换页
+                    pageInfo.put("pageNo", pageInfo.get("pageNo") + PAGE_SIZE);
+                    vectorList = documentVectorMapper.findByPageInfo(pageInfo);
+                }
+                if (c == null) {
+                    LOGGER.error("取不到中心，这是不应该出现的情况！");
+                    break;
+                }
+                cluster.put(c, new HashSet<DocumentVector>());
+                cluster.get(c).add(c);
+                //再次分页遍历元素
+                pageInfo.put("pageNo", 0);
+                pageInfo.put("pageSize", PAGE_SIZE);
+                vectorList = documentVectorMapper.findByPageInfo(pageInfo);
+                while (vectorList != null && vectorList.size() > 0) {
+                    System.out.println("分页：" + pageInfo.get("pageNo"));
+                    for (DocumentVector dv : vectorList) {
+                        if (removeSet.contains(dv.getId())) {  //已被移除
                             continue;
                         }
-                        Set<DocumentVector> centers = cluster.keySet();
-                        int addNum = 0;
-                        for (DocumentVector c : centers) {
-                            if (c.equals(dv)) {
-                                continue;
-                            }
-                            if (vectorService.calSimilarity(c, dv) <= T1) {
-                                cluster.get(c).add(dv);
-                                addNum++;
-                            }
-                            if (vectorService.calSimilarity(c, dv) <= T2) {
-                                removeSet.add(dv.getId());
-                            }
+                        double result = vectorService.calSimilarity(c, dv);
+                        if (result >= T1) {
+                            System.out.println("相似度：" + result);
+                            cluster.get(c).add(dv);
                         }
-                        if (addNum == 0) {
-                            cluster.put(dv, new HashSet<DocumentVector>() {{
-                                this.add(dv);
-                            }});
+                        if (result >= T2) {
+                            System.out.println("较高相似度：" + result);
+                            removeSet.add(dv.getId());
                         }
                     }
                     //换页
@@ -93,6 +110,7 @@ public class ClusterServiceImpl implements IClusterService {
                     vectorList = documentVectorMapper.findByPageInfo(pageInfo);
                 }
             }
+            //TODO 筛选出个数小于2个的聚类
             List<DocumentVector> result = new ArrayList<DocumentVector>();
             result.addAll(cluster.keySet());
             return result;
@@ -216,6 +234,98 @@ public class ClusterServiceImpl implements IClusterService {
         }
 
         return changed;
+    }
+
+
+    //（很挫的测试办法）用于测试的canopy聚类方法，不要使用那么多数据
+    //不过之后可以考虑用于抽样程序，取T1,T2的值
+    public List<DocumentVector> canopyForTest() {
+        //分页读取新闻数据并进行canopy聚类
+        try {
+            int newsTotalNum = documentVectorMapper.queryNum();
+            System.out.println("新闻总数:" + newsTotalNum);
+            //每个页面随机获取十个新闻
+            List<DocumentVector> sourceVector = new ArrayList<DocumentVector>();
+            Map<String, Integer> pageInfo = new HashMap<String, Integer>();
+            pageInfo.put("pageNo", 0);
+            pageInfo.put("pageSize", PAGE_SIZE);
+            List<DocumentVector> vectorList = documentVectorMapper.findByPageInfo(pageInfo);
+            while (vectorList != null && vectorList.size() > 0) {
+                System.out.println("分页：" + pageInfo.get("pageNo"));
+                HashSet<DocumentVector> tmpSet = new HashSet<DocumentVector>();
+                if (vectorList.size() < 100) {
+                    sourceVector.addAll(vectorList);
+                    break;
+                }
+                int curSize = 100;
+                for (int i = 0; i < 10; i++) {
+                    int index = (int) (Math.random() * curSize);
+                    tmpSet.add(vectorList.get(index));
+                    vectorList.remove(index);
+                    curSize--;
+                }
+                sourceVector.addAll(tmpSet);
+                //换页
+                pageInfo.put("pageNo", pageInfo.get("pageNo") + PAGE_SIZE);
+                vectorList = documentVectorMapper.findByPageInfo(pageInfo);
+            }
+            newsTotalNum = sourceVector.size();
+            System.out.println("样本向量集合大小：" + newsTotalNum);
+            //聚类：中心向量 -> 该聚类的向量集合
+            Map<DocumentVector, Set<DocumentVector>> cluster = new HashMap<DocumentVector, Set<DocumentVector>>();
+            //聚类的中心文本向量的id
+            Set<String> removeSet = new HashSet<String>();
+            int iterateNum = 0;
+            int aveNum = 0;
+            double aveTotal = 0;
+            while (removeSet.size() < newsTotalNum) {  //迭代直到所有点都被移除
+                iterateNum++;
+                System.out.println("已经迭代次数：" + iterateNum);
+                System.out.println("已经移除的点：" + removeSet.size());
+                //选取一个中心
+                DocumentVector c = null;
+                for (int i = 0; i < newsTotalNum; i++) {
+                    String id = sourceVector.get(i).getId();
+                    if (!removeSet.contains(id)) {
+                        c = sourceVector.get(i);
+                        removeSet.add(id);
+                        break;
+                    }
+                }
+                if (c == null) {
+                    break;
+                }
+                cluster.put(c, new HashSet<DocumentVector>());
+                cluster.get(c).add(c);
+                for (int i = 0; i < newsTotalNum; i++) {
+                    System.out.println("No." + (i + 1));
+                    final DocumentVector dv = sourceVector.get(i);
+                    if (removeSet.contains(dv.getId())) {  //已被移除
+                        continue;
+                    }
+                    double result = vectorService.calSimilarity(c, dv);
+                    aveTotal += result;
+                    aveNum++;
+                    if (result >= T1) {
+                        System.out.println("相似度：" + result);
+                        cluster.get(c).add(dv);
+                    }
+                    if (result >= T2) {
+                        System.out.println("较高相似度：" + result);
+                        removeSet.add(dv.getId());
+                    }
+                }
+
+            }
+            System.out.println("抽样测试平均向量相似度：" + (aveTotal / aveNum));
+            List<DocumentVector> result = new ArrayList<DocumentVector>();
+            result.addAll(cluster.keySet());
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("canopy聚类抽样测试的过程中出现未知问题。");
+        }
+        return null;
     }
 
 }

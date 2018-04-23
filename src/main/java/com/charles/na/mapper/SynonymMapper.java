@@ -2,6 +2,9 @@ package com.charles.na.mapper;
 
 import com.charles.na.model.DocumentVector;
 import com.charles.na.model.Synonym;
+import com.sun.javafx.collections.MappingChange;
+
+import java.util.Map;
 
 import java.util.List;
 
@@ -26,4 +29,10 @@ public interface SynonymMapper {
      * @description 根据单词查找同义词
      */
     Synonym findByWord(String word);
+
+    /**
+     * @return
+     * @description 根据分页查询所有近义词
+     */
+    List<Synonym> findByPageInfo(Map<String, Integer> map);
 }

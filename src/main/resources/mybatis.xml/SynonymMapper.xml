@@ -23,5 +23,10 @@
         SELECT * FROM t_synonym WHERE word=#{_param}
     </select>
 
+    <!--根据分页查询近义词-->
+    <select id="findByPageInfo" parameterType="java.util.Map" resultMap="baseResult">
+        SELECT * FROM t_synonym LIMIT #{pageNo},#{pageSize}
+    </select>
+
 
 </mapper>

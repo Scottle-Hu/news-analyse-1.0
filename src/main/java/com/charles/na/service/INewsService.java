@@ -34,4 +34,11 @@ public interface INewsService {
      */
     int queryNum();
 
+    /**
+     * @param id
+     * @return
+     * @description 根据id查询
+     */
+    News findById(String id);
+
 }

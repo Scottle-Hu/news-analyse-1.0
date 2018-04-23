@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -27,10 +27,17 @@ public class ClusterServiceImplTest {
     @Test
     public void test01() {
         long start = System.currentTimeMillis();
-        List<DocumentVector> canopy = clusterService.canopyForTest();
-        System.out.println("聚类结果：" + canopy);
-        System.out.println("聚类个数：" + canopy.size());
+        Set<String> removeId = new HashSet<String>();
+        List<DocumentVector> src = new ArrayList<DocumentVector>();
+        //canopy粗聚类
+        Map<DocumentVector, Set<DocumentVector>> canopy = clusterService.canopyForTest(removeId, src);
+        System.out.println("canopy聚类结果：" + canopy);
+        System.out.println("canopy聚类个数：" + canopy.size());
         System.out.println("抽样canopy耗时：" + TimeUtil.convertMillis2String(System.currentTimeMillis() - start));
+        //k-means细化聚类
+        start = System.currentTimeMillis();
+        clusterService.kMeansForTest(removeId, src, canopy);
+        System.out.println("抽样k-means耗时：" + TimeUtil.convertMillis2String(System.currentTimeMillis() - start));
     }
 
 }

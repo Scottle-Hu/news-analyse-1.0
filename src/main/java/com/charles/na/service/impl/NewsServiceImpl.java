@@ -86,4 +86,8 @@ public class NewsServiceImpl implements INewsService {
     public int queryNum() {
         return newsMapper.queryNum();
     }
+
+    public News findById(String id) {
+        return newsMapper.findById(id);
+    }
 }

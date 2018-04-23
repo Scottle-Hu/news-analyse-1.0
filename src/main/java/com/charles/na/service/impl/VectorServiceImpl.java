@@ -2,16 +2,16 @@ package com.charles.na.service.impl;
 
 import com.charles.na.mapper.SynonymMapper;
 import com.charles.na.model.DocumentVector;
+import com.charles.na.model.Synonym;
 import com.charles.na.service.IVectorService;
 import com.charles.na.soa.impl.thread.BuildDocumentVectorThread;
 import com.charles.na.utils.DocumentVector2MapUtil;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Charles
@@ -24,8 +24,35 @@ public class VectorServiceImpl implements IVectorService {
 
     private Logger LOGGER = Logger.getLogger(VectorServiceImpl.class);
 
+    /**
+     * 词语 -> 编码 的映射关系
+     */
+    private Map<String, String> synonymMap = new HashMap<String, String>();
+
+    private static final int PAGE_SIZE = 500;
+
     @Resource
     private SynonymMapper synonymMapper;
+
+    /**
+     * 加载近义词表到内存中
+     */
+    @PostConstruct
+    public void getSynonym() {
+        System.out.println("============开始加载近义词表==========");
+        Map<String, Integer> pageInfo = new HashMap<String, Integer>();
+        pageInfo.put("pageNo", 0);
+        pageInfo.put("pageSize", PAGE_SIZE);
+        List<Synonym> synonymList = synonymMapper.findByPageInfo(pageInfo);
+        while (synonymList != null && synonymList.size() > 0) {
+            for (Synonym s : synonymList) {
+                synonymMap.put(s.getWord(), s.getCode());
+            }
+            pageInfo.put("pageNo", pageInfo.get("pageNo") + PAGE_SIZE);
+            synonymList = synonymMapper.findByPageInfo(pageInfo);
+        }
+        System.out.println("============结束加载近义词表==========");
+    }
 
     /**
      * @param v1
@@ -56,7 +83,6 @@ public class VectorServiceImpl implements IVectorService {
                 denominator2 += e.getValue() * e.getValue();
             }
             result = son / Math.sqrt(denominator1 * denominator2);
-
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,8 +99,26 @@ public class VectorServiceImpl implements IVectorService {
      */
     public double calSynonym(String word1, String word2) {
         double result = 0;
-        //TODO
-
+        String code1 = synonymMap.get(word1);
+        String code2 = synonymMap.get(word2);
+        if (code1 != null && code2 != null) {
+            if (code1.endsWith("@") || code2.endsWith("@")) {  //'@'代表自封闭的词语
+                return result;
+            }
+            if (code1.equals(code2)) {
+                if (code1.endsWith("=")) {  //相同含义
+                    return 1;
+                } else {  //相关含义
+                    return 0.8;
+                }
+            }
+            for (int i = 5; i > 0; i--) {  //根据相同编码个数计算相似度
+                if (code1.substring(0, i).equals(code2.substring(0, i))) {
+                    result = (i / 5) * 0.8;
+                    return result;
+                }
+            }
+        }
         return result;
     }
 

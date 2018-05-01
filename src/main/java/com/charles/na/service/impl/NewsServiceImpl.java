@@ -38,7 +38,7 @@ public class NewsServiceImpl implements INewsService {
     @Resource
     private StopWordMapper stopWordMapper;
 
-    private HashSet<String> stopWords = new HashSet<String>();
+    public static HashSet<String> stopWords = new HashSet<String>();
 
     @PostConstruct
     public void loadStopWords() {
@@ -90,4 +90,5 @@ public class NewsServiceImpl implements INewsService {
     public News findById(String id) {
         return newsMapper.findById(id);
     }
+
 }

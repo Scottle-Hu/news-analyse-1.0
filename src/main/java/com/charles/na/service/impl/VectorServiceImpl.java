@@ -37,7 +37,7 @@ public class VectorServiceImpl implements IVectorService {
     /**
      * 加载近义词表到内存中
      */
-    @PostConstruct
+    /*@PostConstruct
     public void getSynonym() {
         System.out.println("============开始加载近义词表==========");
         Map<String, Integer> pageInfo = new HashMap<String, Integer>();
@@ -52,7 +52,7 @@ public class VectorServiceImpl implements IVectorService {
             synonymList = synonymMapper.findByPageInfo(pageInfo);
         }
         System.out.println("============结束加载近义词表==========");
-    }
+    }*/
 
     /**
      * @param v1

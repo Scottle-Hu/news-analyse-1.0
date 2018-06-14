@@ -17,16 +17,16 @@ public interface IClusterService {
      * @return 聚类类别个数
      * @description 使用canopy算法获取的各个聚类的中心
      */
-    Map<DocumentVector, Set<DocumentVector>> canopy(Set<String> removeId);
+    Map<DocumentVector, Set<DocumentVector>> canopy(Set<Long> removeId);
 
     /**
      * @description 使用k-means算法细化聚类并写入数据库
      */
-    void kMeans(Map<DocumentVector, Set<DocumentVector>> canopy, Set<String> removeId);
+    void kMeans(Map<DocumentVector, Set<DocumentVector>> canopy, Set<Long> removeId);
 
-    Map<DocumentVector, Set<DocumentVector>> canopyForTest(Set<String> removeId,
+    Map<DocumentVector, Set<DocumentVector>> canopyForTest(Set<Long> removeId,
                                                            List<DocumentVector> tSourceVector);
 
-    void kMeansForTest(Set<String> removeId, List<DocumentVector> sourceVector,
+    void kMeansForTest(Set<Long> removeId, List<DocumentVector> sourceVector,
                        Map<DocumentVector, Set<DocumentVector>> canopy);
 }

@@ -18,7 +18,7 @@ public interface DocumentVectorMapper {
      * @return
      * @description 根据id查询文本向量
      */
-    DocumentVector findById(String id);
+    DocumentVector findById(long id);
 
     /**
      * @param newsId
@@ -40,6 +40,14 @@ public interface DocumentVectorMapper {
      * @description 分页查询
      */
     List<DocumentVector> findByPageInfo(Map<String, Integer> map);
+
+    /**
+     * 获取当天所有文本向量
+     *
+     * @param date
+     * @return
+     */
+    List<DocumentVector> findAllByDate(String date);
 
     /**
      * @return

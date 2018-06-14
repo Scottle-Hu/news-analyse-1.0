@@ -6,7 +6,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!--相关配置参数-->
-    <context:property-placeholder location="jdbc.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true"/>
 
     <!-- 一、使用druid数据库连接池注册数据源 -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">

@@ -5,7 +5,7 @@ import com.charles.na.model.DocumentVector;
 import java.util.Map;
 
 /**
- * @author 李紫宸
+ * @author huqj
  * @create 2018/3/29
  * @description 文本向量计算服务接口
  * @since 1.0
@@ -13,6 +13,8 @@ import java.util.Map;
 public interface IVectorService {
 
     double calSimilarity(DocumentVector v1, DocumentVector v2);
+
+    double simpleCalSimilarity(DocumentVector v1, DocumentVector v2);
 
     double calSynonym(String word1, String word2);
 }

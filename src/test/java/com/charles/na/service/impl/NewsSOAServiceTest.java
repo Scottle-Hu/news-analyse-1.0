@@ -21,4 +21,9 @@ public class NewsSOAServiceTest {
         newsSOAService.vector();
     }
 
+    @Test
+    public void testTopic() {
+        newsSOAService.topic();
+    }
+
 }

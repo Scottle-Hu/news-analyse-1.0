@@ -10,7 +10,7 @@ public class DocumentVector {
     /**
      * id
      */
-    private String id;
+    private long id;
     /**
      * 对应的新闻的id
      */
@@ -24,11 +24,11 @@ public class DocumentVector {
      */
     private String date;
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -68,6 +68,6 @@ public class DocumentVector {
 
     @Override
     public boolean equals(Object obj) {
-        return this.id.equals(((DocumentVector) obj).getId());
+        return this.newsId == (((DocumentVector) obj).getNewsId());
     }
 }

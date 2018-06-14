@@ -30,7 +30,7 @@ public class BuildDocumentVectorThread extends Thread {
     /**
      * 分页信息
      */
-    private Map<String, Integer> pageInfo;
+    private Map<String, Object> pageInfo;
 
     private INewsService newsService;
 
@@ -42,19 +42,21 @@ public class BuildDocumentVectorThread extends Thread {
         super();
     }
 
-    public BuildDocumentVectorThread(Map<String, Integer> pageInfo) {
+    public BuildDocumentVectorThread(Map<String, Object> pageInfo) {
         this.pageInfo = pageInfo;
     }
 
     @Override
     public void run() {
-        if (pageInfo == null || pageInfo.get("pageNo") == null || pageInfo.get("pageSize") == null) {
+        if (pageInfo == null || pageInfo.get("pageNo") == null
+                || pageInfo.get("pageSize") == null || pageInfo.get("date") == null) {
             LOGGER.error("分页信息缺失");
             return;
         }
         List<News> newsList = null;
         try {
             newsList = queryDBToGetNews(pageInfo);
+            System.out.println(newsList.size());
         } catch (Exception e2) {
             e2.printStackTrace();
             LOGGER.error("查询t_news出现问题");
@@ -65,7 +67,7 @@ public class BuildDocumentVectorThread extends Thread {
             try {
                 totalNum++; //记录
                 DocumentVector dv = new DocumentVector();
-                dv.setId(IDUtil.generateID());
+                dv.setId(IDUtil.generateLongID());
                 dv.setNewsId(news.getId());
                 Map<String, Integer> map = newsService.splitById(news.getId());
                 String vector = "(";
@@ -109,7 +111,8 @@ public class BuildDocumentVectorThread extends Thread {
         List<News> newsList = null;
         while (tryAgin && tryNum < Constant.TRY_MAX) {
             try {
-                newsList = newsService.findByPage(pageInfo);
+                newsList = newsService.findByPage(Integer.valueOf(pageInfo.get("pageNo").toString()),
+                        Integer.valueOf(pageInfo.get("pageSize").toString()), pageInfo.get("date").toString());
                 return newsList;
             } catch (Exception e) {
                 e.printStackTrace();

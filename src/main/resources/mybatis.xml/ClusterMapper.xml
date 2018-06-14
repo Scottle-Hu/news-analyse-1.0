@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.charles.na.mapper.ClusterMapper">
+
+    <!-- 定义User类型 -->
+    <resultMap type="Cluster" id="NewsResult">
+        <result property="id" column="id"/>
+        <result property="newsId" column="news_id"/>
+        <result property="date" column="date"/>
+    </resultMap>
+
+    <!--增加一条记录-->
+    <insert id="insertOne" parameterType="Cluster">
+        INSERT INTO t_cluster VALUES (#{id},#{newsId},#{date})
+    </insert>
+
+    <!--增加多条记录-->
+    <insert id="insertMany" parameterType="List">
+        INSERT INTO t_cluster VALUES
+        <foreach collection="list" item="cluster" separator=",">
+            (#{cluster.id},#{cluster.newsId},#{cluster.date})
+        </foreach>
+    </insert>
+
+    <!--按照id查询记录-->
+    <select id="findByClusterId" parameterType="java.lang.String" resultMap="NewsResult">
+      SELECT * FROM t_cluster WHERE id=#{_param}
+    </select>
+
+    <!--根据日期查询-->
+    <select id="findByDate" parameterType="java.lang.String" resultMap="NewsResult">
+        SELECT * FROM t_cluster WHERE `date`=#{_param}
+    </select>
+
+</mapper>

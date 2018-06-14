@@ -11,11 +11,16 @@ public interface INewsSOAService {
     /**
      * 新闻内容分词，建立文本向量
      */
-    boolean vector ();
+    boolean vector();
 
     /**
      * 新闻文本聚类
      */
     void cluster();
+
+    /**
+     * 提取聚类的关键短语并持久化到数据库
+     */
+    void topic();
 
 }

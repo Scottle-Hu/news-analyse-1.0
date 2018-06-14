@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.charles.na.mapper.TopicMapper">
+
+    <!-- 定义Topic类型 -->
+    <resultMap type="Topic" id="TopicResult">
+        <result property="id" column="id"/>
+        <result property="topic" column="topic"/>
+        <result property="date" column="date"/>
+        <result property="hot" column="hot"/>
+        <result property="newsNum" column="news_num"/>
+    </resultMap>
+
+    <resultMap id="StringResult" type="String">
+        <result property="id" column="id"/>
+    </resultMap>
+
+    <!--存储话题记录-->
+    <insert id="saveTopic" parameterType="Topic">
+        INSERT INTO t_topic VALUES (#{id},#{topic},#{date},#{hot},#{newsNum})
+    </insert>
+
+    <!--查询指定日期的话题id集合-->
+    <select id="findIdsByDate" parameterType="String" resultMap="StringResult">
+        SELECT id FROM t_topic WHERE `date`=#{_param}
+    </select>
+
+    <!--根据Id查询-->
+    <select id="findById" parameterType="String" resultType="Topic">
+        SELECT * FROM t_topic WHERE id=#{_param}
+    </select>
+
+</mapper>

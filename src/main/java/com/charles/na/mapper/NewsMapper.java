@@ -25,7 +25,7 @@ public interface NewsMapper {
      * @return
      * @description 分页查询
      */
-    List<News> findByPage(Map<String, Integer> map);
+    List<News> findByPage(int offset, int limit, String date);
 
     /**
      * @return
@@ -57,6 +57,6 @@ public interface NewsMapper {
      * @return
      * @description 查询新闻条数
      */
-    int queryNum();
+    int queryNum(String date);
 
 }

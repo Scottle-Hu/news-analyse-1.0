@@ -36,7 +36,7 @@ public class DocumentVector2MapUtil {
         }
         vector.append(")");
         dv.setVector(vector.toString());
-        dv.setId(IDUtil.generateID());
+        dv.setId(IDUtil.generateLongID());
         return dv;
     }
 

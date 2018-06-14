@@ -79,12 +79,12 @@ public class NewsServiceImpl implements INewsService {
         return result;
     }
 
-    public synchronized List<News> findByPage(Map<String, Integer> map) {
-        return newsMapper.findByPage(map);
+    public synchronized List<News> findByPage(int offset, int limit, String date) {
+        return newsMapper.findByPage(offset, limit, date);
     }
 
-    public int queryNum() {
-        return newsMapper.queryNum();
+    public int queryNum(String date) {
+        return newsMapper.queryNum(date);
     }
 
     public News findById(String id) {

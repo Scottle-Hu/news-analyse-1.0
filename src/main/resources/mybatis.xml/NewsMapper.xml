@@ -24,13 +24,13 @@
     </select>
 
     <!--分页查询-->
-    <select id="findByPage" parameterType="java.util.Map" resultMap="NewsResult">
-        SELECT * FROM t_news LIMIT #{pageNo},#{pageSize}
+    <select id="findByPage" resultMap="NewsResult">
+        SELECT * FROM t_news WHERE catch_time=#{2} LIMIT #{0},#{1}
     </select>
 
     <!--查询新闻条数-->
-    <select id="queryNum" resultType="Integer">
-        SELECT COUNT(*) FROM t_news
+    <select id="queryNum" resultType="Integer" parameterType="String">
+        SELECT COUNT(*) FROM t_news WHERE catch_time=#{_param}
     </select>
 
 

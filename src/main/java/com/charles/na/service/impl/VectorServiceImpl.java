@@ -37,7 +37,7 @@ public class VectorServiceImpl implements IVectorService {
     /**
      * 加载近义词表到内存中
      */
-    /*@PostConstruct
+    @PostConstruct
     public void getSynonym() {
         System.out.println("============开始加载近义词表==========");
         Map<String, Integer> pageInfo = new HashMap<String, Integer>();
@@ -52,7 +52,7 @@ public class VectorServiceImpl implements IVectorService {
             synonymList = synonymMapper.findByPageInfo(pageInfo);
         }
         System.out.println("============结束加载近义词表==========");
-    }*/
+    }
 
     /**
      * @param v1
@@ -92,6 +92,42 @@ public class VectorServiceImpl implements IVectorService {
     }
 
     /**
+     * canopy阶段计算文档相似度的简单方法
+     *
+     * @param v1
+     * @param v2
+     * @return
+     */
+    public double simpleCalSimilarity(DocumentVector v1, DocumentVector v2) {
+        try {
+            double result = 0;
+            Map<String, Double> m1 = DocumentVector2MapUtil.convertDocumentVector2Map(v1);
+            Map<String, Double> m2 = DocumentVector2MapUtil.convertDocumentVector2Map(v2);
+            HashSet<String> words = new HashSet<String>();
+            words.addAll(m1.keySet());
+            words.addAll(m2.keySet());
+            //填充向量，添加为权重0的词语
+            DocumentVector2MapUtil.fillVector(m1, words);
+            DocumentVector2MapUtil.fillVector(m2, words);
+            //使用近义词关系更新向量
+            updateVectorWithSynonym(m1);
+            updateVectorWithSynonym(m2);
+            int num = 0;
+            for (Map.Entry<String, Double> e : m1.entrySet()) {
+                double x1 = e.getValue();
+                double x2 = m2.get(e.getKey());
+                result += Math.abs(x1 - x2) / (x1 + x2);
+                num++;
+            }
+            return result / num;
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("计算向量相似度出现问题。");
+            return 0;
+        }
+    }
+
+    /**
      * @param word1
      * @param word2
      * @return
@@ -109,12 +145,12 @@ public class VectorServiceImpl implements IVectorService {
                 if (code1.endsWith("=")) {  //相同含义
                     return 1;
                 } else {  //相关含义
-                    return 0.8;
+                    return 0.9;
                 }
             }
             for (int i = 5; i > 0; i--) {  //根据相同编码个数计算相似度
                 if (code1.substring(0, i).equals(code2.substring(0, i))) {
-                    result = (i / 5) * 0.8;
+                    result = (i / 5) * 0.9;
                     return result;
                 }
             }

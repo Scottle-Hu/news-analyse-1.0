@@ -33,6 +33,11 @@
         SELECT * FROM t_document_vector LIMIT #{pageNo},#{pageSize}
     </select>
 
+    <!--查询当天所有向量-->
+    <select id="findAllByDate" parameterType="String" resultMap="baseResult">
+        SELECT * FROM t_document_vector WHERE `date`=#{_param}
+    </select>
+
     <!--获取总数量-->
     <select id="queryNum" resultType="Integer">
         SELECT count(*) FROM t_document_vector

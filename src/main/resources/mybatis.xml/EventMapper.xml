@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.charles.na.mapper.EventMapper">
+
+    <!-- 定义User类型 -->
+    <resultMap type="Event2Topic" id="Event2TopicResult">
+        <result property="eventId" column="event_id"/>
+        <result property="topicId" column="topic_id"/>
+        <result property="date" column="date"/>
+    </resultMap>
+
+    <!--根据日期获取事件与话题的关联-->
+    <select id="findEventAndTopicByDate" resultMap="Event2TopicResult" parameterType="String">
+        SELECT event_id,topic_id FROM t_event_topic WHERE `date`=#{_param}
+    </select>
+
+    <!--存储一条关系记录-->
+    <insert id="saveEvent2Topic" parameterType="Event2Topic">
+        INSERT INTO t_event_topic VALUES (#{eventId},#{topicId},#{date})
+    </insert>
+
+    <!--更新事件-->
+    <update id="update" parameterType="Event">
+        UPDATE t_event SET title=#{title},hot=#{hot},sentiment=#{sentiment},people=#{people} WHERE id=#{id}
+    </update>
+
+    <!--保存新的事件-->
+    <insert id="save" parameterType="Event">
+        INSERT INTO t_event VALUES (#{id},#{title},#{hot},#{sentiment},#{people})
+    </insert>
+
+    <!--根据id查询事件-->
+    <select id="findById" parameterType="String" resultType="Event">
+        SELECT * FROM t_event WHERE id=#{_param}
+    </select>
+
+</mapper>

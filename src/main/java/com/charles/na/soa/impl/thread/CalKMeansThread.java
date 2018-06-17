@@ -2,7 +2,6 @@ package com.charles.na.soa.impl.thread;
 
 import com.charles.na.model.DocumentVector;
 import com.charles.na.service.IVectorService;
-import sun.plugin.dom.core.Document;
 
 import java.util.HashSet;
 import java.util.List;

@@ -64,7 +64,7 @@ public class TrackServiceImpl implements ITrackService {
         //获取历史事件
         List<Pair<Event2Topic, Map<String, Double>>> eventHis = new ArrayList<Pair<Event2Topic, Map<String, Double>>>();
         for (int i = 0; i < preDays; i++) {
-            Date date = new Date(System.currentTimeMillis() - (i + 1) * 24 * 3600 * 1000); //TODO
+            Date date = new Date(System.currentTimeMillis() - (i + 1) * 24 * 3600 * 1000);
             String str = new SimpleDateFormat("yyyy-MM-dd").format(date);
             List<Event2Topic> eventAndTopicList = eventMapper.findEventAndTopicByDate(str);
             Map<Event2Topic, Set<Map<String, Double>>> eventMap = reduceByEventId(eventAndTopicList);

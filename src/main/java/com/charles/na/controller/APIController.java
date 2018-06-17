@@ -61,7 +61,13 @@ public class APIController {
     @RequestMapping(value = "/cluster", name = "聚类")
     public void cluster(HttpServletResponse response) throws IOException {
         try {
-            newsSOAService.cluster();
+            //新开线程处理请求
+            new Thread() {
+                @Override
+                public void run() {
+                    newsSOAService.cluster();
+                }
+            }.start();
             LOGGER.info("新闻聚类成功");
             response.getOutputStream().write(SUCCESS.getBytes("utf-8"));
         } catch (Exception e) {
@@ -74,7 +80,12 @@ public class APIController {
     @RequestMapping(value = "/topic", name = "提取话题")
     public void topic(HttpServletResponse response) throws IOException {
         try {
-            newsSOAService.topic();
+            new Thread() {
+                @Override
+                public void run() {
+                    newsSOAService.topic();
+                }
+            }.start();
             LOGGER.info("提取话题成功");
             response.getOutputStream().write(SUCCESS.getBytes("utf-8"));
         } catch (Exception e) {
@@ -87,7 +98,12 @@ public class APIController {
     @RequestMapping(value = "/event", name = "事件归类")
     public void event(HttpServletResponse response) throws IOException {
         try {
-            trackService.track();
+            new Thread() {
+                @Override
+                public void run() {
+                    trackService.track();
+                }
+            }.start();
             LOGGER.info("事件归类成功");
             response.getOutputStream().write(SUCCESS.getBytes("utf-8"));
         } catch (Exception e) {
@@ -100,7 +116,12 @@ public class APIController {
     @RequestMapping(value = "/result", name = "抽取结果")
     public void result(HttpServletResponse response) throws IOException {
         try {
-            resultService.convert2result();
+            new Thread() {
+                @Override
+                public void run() {
+                    resultService.convert2result();
+                }
+            }.start();
             LOGGER.info("抽取结果成功");
             response.getOutputStream().write(SUCCESS.getBytes("utf-8"));
         } catch (Exception e) {

@@ -1,11 +1,14 @@
 package com.charles.na.model;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * @author Charles
  * @create 2018/3/28
  * @description 新闻实体类
  * @since 1.0
  */
+@JsonIgnoreProperties({"keywords", "visitNum", "remarkNum", "catchTime"})
 public class News {
 
     /**

@@ -11,6 +11,7 @@
     <!-- 别名 -->
     <typeAliases>
         <package name="com.charles.na.model"/>
+        <package name="com.charles.na.web.model"/>
     </typeAliases>
 
 </configuration>

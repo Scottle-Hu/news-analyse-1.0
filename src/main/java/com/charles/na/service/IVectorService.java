@@ -17,4 +17,7 @@ public interface IVectorService {
     double simpleCalSimilarity(DocumentVector v1, DocumentVector v2);
 
     double calSynonym(String word1, String word2);
+
+    double calSimilarityBetweenMap(Map<String, Double> m1, Map<String, Double> m2);
+
 }

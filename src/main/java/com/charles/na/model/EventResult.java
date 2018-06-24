@@ -1,5 +1,6 @@
 package com.charles.na.model;
 
+import com.charles.na.web.model.NameAndValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -12,6 +13,8 @@ import java.util.*;
  */
 public class EventResult {
 
+    private String viewPoint;
+
     private String id;
 
     private String title;
@@ -19,6 +22,12 @@ public class EventResult {
     private int curHot;
 
     private String hot;
+
+    private Map<String, List> hotTend = new HashMap<String, List>();
+
+    private List<NameAndValue> sentimentMap;
+
+    private List<NameAndValue> peopleMap;
 
     private String sentiment;
 
@@ -80,5 +89,50 @@ public class EventResult {
 
     public void setNewsList(List<News> newsList) {
         this.newsList = newsList;
+    }
+
+    public Map<String, List> getHotTend() {
+        return hotTend;
+    }
+
+    public void setHotTend(Map<String, List> hotTend) {
+        this.hotTend = hotTend;
+    }
+
+    public List<NameAndValue> getSentimentMap() {
+        return sentimentMap;
+    }
+
+    public void setSentimentMap(List<NameAndValue> sentimentMap) {
+        this.sentimentMap = sentimentMap;
+    }
+
+    public List<NameAndValue> getPeopleMap() {
+        return peopleMap;
+    }
+
+    public void setPeopleMap(List<NameAndValue> peopleMap) {
+        this.peopleMap = peopleMap;
+    }
+
+    public String getViewPoint() {
+        return viewPoint;
+    }
+
+    public void setViewPoint(String viewPoint) {
+        this.viewPoint = viewPoint;
+    }
+
+    @Override
+    public String toString() {
+        return "EventResult{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", curHot=" + curHot +
+                ", hot='" + hot + '\'' +
+                ", sentiment='" + sentiment + '\'' +
+                ", people='" + people + '\'' +
+                ", newsList=" + newsList +
+                '}';
     }
 }

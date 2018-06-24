@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.charles.na.mapper.SubscribeMapper">
+
+    <!-- Subscribe -->
+    <resultMap type="Subscribe" id="SubscribeResult">
+        <result property="userId" column="user_id"/>
+        <result property="eventId" column="event_id"/>
+        <result property="date" column="date"/>
+    </resultMap>
+
+    <!--根据用户id查询订阅-->
+    <select id="findEventsIdByUserId" parameterType="String" resultMap="SubscribeResult">
+        SELECT * FROM t_subscribe WHERE user_id=#{_param};
+    </select>
+
+    <!--存储订阅关系-->
+    <insert id="insertOne" parameterType="Subscribe">
+        INSERT INTO t_subscribe VALUES (#{userId},#{eventId},#{date})
+    </insert>
+
+</mapper>

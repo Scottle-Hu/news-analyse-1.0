@@ -1,5 +1,7 @@
 package com.charles.na.service;
 
+import java.util.*;
+
 /**
  * 对新闻内容进行情感倾向分析的接口类
  *
@@ -14,5 +16,13 @@ public interface ISentimentService {
      * @return
      */
     String parseSentiment(String content);
+
+    /**
+     * 计算负面情感指数
+     *
+     * @param map
+     * @return
+     */
+    int calNegative(Map<String, String> map);
 
 }

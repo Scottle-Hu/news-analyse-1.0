@@ -60,4 +60,17 @@ public class SentimentServiceImpl implements ISentimentService {
         }
         return defaultJson;
     }
+
+    public int calNegative(Map<String, String> map) {
+        int result = 0;
+        if (map.get("anger") != null)
+            result += Integer.parseInt(map.get("anger"));
+        if (map.get("evil") != null)
+            result += Integer.parseInt(map.get("evil"));
+        if (map.get("fear") != null)
+            result += Integer.parseInt(map.get("fear"));
+        if (map.get("sorrow") != null)
+            result += Integer.parseInt(map.get("sorrow"));
+        return result;
+    }
 }

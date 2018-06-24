@@ -39,13 +39,13 @@ public class ClusterServiceImpl implements IClusterService {
 
     private static final int PAGE_SIZE = 100;
 
-    private static final int K_MEANS_MAX = 30;   //k-means聚类的最大迭代次数
+    private static final int K_MEANS_MAX = 35;   //k-means聚类的最大迭代次数
 
     private static final int CLUSTER_MIN_NUM = 3;  //若某个聚类元素个数小于该值，则舍弃该聚类
 
-    private static final int concurrentCalNum = 50;  //canopy并发计算的个数
+    private static final int concurrentCalNum = 100;  //canopy并发计算的个数
 
-    private static final int kMeansConcurrentCalNum = 250;  //kmeans并发计算的个数
+    private static final int kMeansConcurrentCalNum = 200;  //kmeans并发计算的个数
 
     private static double allowedMaxCenterDiff = 10e-3;  //k-means中允许的最大中心变化量
 

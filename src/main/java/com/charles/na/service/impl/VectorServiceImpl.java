@@ -92,6 +92,41 @@ public class VectorServiceImpl implements IVectorService {
     }
 
     /**
+     * @param m1
+     * @param m2
+     * @return
+     * @description 计算两个文本向量之间的相似度
+     */
+    public double calSimilarityBetweenMap(Map<String, Double> m1, Map<String, Double> m2) {
+        try {
+            double result = 0;
+            HashSet<String> words = new HashSet<String>();
+            words.addAll(m1.keySet());
+            words.addAll(m2.keySet());
+            //填充向量，添加为权重0的词语
+            DocumentVector2MapUtil.fillVector(m1, words);
+            DocumentVector2MapUtil.fillVector(m2, words);
+            //使用近义词关系更新向量
+            updateVectorWithSynonym(m1);
+            updateVectorWithSynonym(m2);
+            double denominator1 = 0, denominator2 = 0, son = 0;
+            for (Map.Entry<String, Double> e : m1.entrySet()) {
+                denominator1 += e.getValue() * e.getValue();
+                son += e.getValue() * m2.get(e.getKey());  //顺带在此循环内计算结果的分子
+            }
+            for (Map.Entry<String, Double> e : m2.entrySet()) {
+                denominator2 += e.getValue() * e.getValue();
+            }
+            result = son / Math.sqrt(denominator1 * denominator2);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("计算向量相似度出现问题。");
+            return 0;
+        }
+    }
+
+    /**
      * canopy阶段计算文档相似度的简单方法
      *
      * @param v1

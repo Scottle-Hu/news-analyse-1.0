@@ -26,5 +26,11 @@ public interface UserMapper {
      */
     int insertUser(User user);
 
+    /**
+     * @param id
+     * @return
+     */
+    User findById(String id);
+
 
 }

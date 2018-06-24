@@ -11,6 +11,14 @@
         <result property="date" column="date"/>
     </resultMap>
 
+    <resultMap id="eventResult" type="Event">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="hot" column="hot"/>
+        <result property="sentiment" column="sentiment"/>
+        <result property="people" column="people"/>
+    </resultMap>
+
     <!--根据日期获取事件与话题的关联-->
     <select id="findEventAndTopicByDate" resultMap="Event2TopicResult" parameterType="String">
         SELECT event_id,topic_id FROM t_event_topic WHERE `date`=#{_param}
@@ -34,6 +42,11 @@
     <!--根据id查询事件-->
     <select id="findById" parameterType="String" resultType="Event">
         SELECT * FROM t_event WHERE id=#{_param}
+    </select>
+
+    <!--查询所有事件-->
+    <select id="findAll" resultMap="eventResult">
+      SELECT * FROM t_event
     </select>
 
 </mapper>

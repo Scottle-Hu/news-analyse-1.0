@@ -49,4 +49,12 @@ public interface EventMapper {
      */
     Event findById(String id);
 
+    /**
+     * 获取所有事件
+     *
+     * @return
+     */
+    //TODO 先这么做，后面数据量大了不能这样
+    List<Event> findAll();
+
 }

@@ -46,7 +46,8 @@ public class ResultServiceImpl implements IResultService {
     @Value("${mongo.dbname}")
     private String dbName;
 
-    private String collectionName = "result";
+    @Value("${mongo.collection}")
+    private String collectionName;
 
     private MongoDatabase mongoDatabase;
 

@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -63,8 +65,14 @@ public class TrackServiceImpl implements ITrackService {
     public void track() {
         //获取历史事件
         List<Pair<Event2Topic, Map<String, Double>>> eventHis = new ArrayList<Pair<Event2Topic, Map<String, Double>>>();
+        long now = System.currentTimeMillis();
+        try {
+            now = DateFormat.getInstance().parse(today).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         for (int i = 0; i < preDays; i++) {
-            Date date = new Date(System.currentTimeMillis() - (i + 1) * 24 * 3600 * 1000);
+            Date date = new Date(now - (i + 1) * 24 * 3600 * 1000);
             String str = new SimpleDateFormat("yyyy-MM-dd").format(date);
             List<Event2Topic> eventAndTopicList = eventMapper.findEventAndTopicByDate(str);
             Map<Event2Topic, Set<Map<String, Double>>> eventMap = reduceByEventId(eventAndTopicList);

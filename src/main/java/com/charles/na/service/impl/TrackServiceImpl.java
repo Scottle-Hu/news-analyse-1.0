@@ -67,7 +67,7 @@ public class TrackServiceImpl implements ITrackService {
         List<Pair<Event2Topic, Map<String, Double>>> eventHis = new ArrayList<Pair<Event2Topic, Map<String, Double>>>();
         long now = System.currentTimeMillis();
         try {
-            now = DateFormat.getInstance().parse(today).getTime();
+            now = new SimpleDateFormat("yyyy-MM-dd").parse(today).getTime();
         } catch (ParseException e) {
             e.printStackTrace();
         }

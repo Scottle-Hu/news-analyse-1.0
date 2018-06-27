@@ -172,6 +172,11 @@ public class NewsSOAServiceImpl implements INewsSOAService {
         }
     }
 
+    public void setDate(String date) {
+        this.today = date;
+        clusterService.setDate(date);
+    }
+
     @PreDestroy
     public void destroy() {
         //关闭线程池

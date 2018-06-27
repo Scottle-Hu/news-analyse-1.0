@@ -5,7 +5,9 @@ import com.charles.na.service.IResultService;
 import com.charles.na.service.ITrackService;
 import com.charles.na.soa.INewsSOAService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 /**
@@ -35,5 +37,26 @@ public class MainServiceImpl implements IMainService {
         newsSOAService.topic();
         trackService.track();
         resultService.convert2result();
+    }
+
+    //自己设置日期
+    public void setDate(String date) {
+        if (!StringUtils.isEmpty(date)) {
+            newsSOAService.setDate(date);
+            trackService.setDate(date);
+            resultService.setDate(date);
+        }
+    }
+
+    public INewsSOAService getNewsSOAService() {
+        return newsSOAService;
+    }
+
+    public ITrackService getTrackService() {
+        return trackService;
+    }
+
+    public IResultService getResultService() {
+        return resultService;
     }
 }

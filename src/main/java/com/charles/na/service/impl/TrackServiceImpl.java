@@ -167,6 +167,10 @@ public class TrackServiceImpl implements ITrackService {
         }
     }
 
+    public void setDate(String date) {
+        this.today = date;
+    }
+
     /**
      * 根据topic计算聚类的中心向量
      *

@@ -168,6 +168,10 @@ public class ResultServiceImpl implements IResultService {
         return newsList;
     }
 
+    public void setDate(String date) {
+        this.today = date;
+    }
+
     private void testGetCollection() {
         FindIterable<Document> documents = mongoDatabase.getCollection(collectionName).find();
         MongoCursor<Document> iterator = documents.iterator();

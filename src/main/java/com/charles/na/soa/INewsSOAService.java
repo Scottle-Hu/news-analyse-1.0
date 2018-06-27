@@ -23,4 +23,11 @@ public interface INewsSOAService {
      */
     void topic();
 
+    /**
+     * 设置日期
+     *
+     * @param date
+     */
+    void setDate(String date);
+
 }

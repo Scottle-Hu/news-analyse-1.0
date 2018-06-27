@@ -12,4 +12,11 @@ public interface ITrackService {
      */
     void track();
 
+    /**
+     * 设置日期
+     *
+     * @param date
+     */
+    void setDate(String date);
+
 }

@@ -12,5 +12,11 @@ public interface IResultService {
      */
     void convert2result();
 
+    /**
+     * 设置日期
+     *
+     * @param date
+     */
+    void setDate(String date);
 
 }

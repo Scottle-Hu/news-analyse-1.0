@@ -533,4 +533,7 @@ public class ClusterServiceImpl implements IClusterService {
         }
     }
 
+    public void setDate(String date) {
+        this.today = date;
+    }
 }

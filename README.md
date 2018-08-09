@@ -3,7 +3,7 @@ version 1.0 of news analyse system
 
 - main function
   - catch news data from web periodcally
-  - distributed cluster analyse
+  - cluster analyse
   - topic abstract and track
   - visulize impression
   

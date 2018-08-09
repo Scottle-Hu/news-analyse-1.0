@@ -62,31 +62,11 @@ public class VectorServiceImpl implements IVectorService {
      */
     public double calSimilarity(DocumentVector v1, DocumentVector v2) {
         try {
-            double result = 0;
             Map<String, Double> m1 = DocumentVector2MapUtil.convertDocumentVector2Map(v1);
             Map<String, Double> m2 = DocumentVector2MapUtil.convertDocumentVector2Map(v2);
-            HashSet<String> words = new HashSet<String>();
-            words.addAll(m1.keySet());
-            words.addAll(m2.keySet());
-            //填充向量，添加为权重0的词语
-            DocumentVector2MapUtil.fillVector(m1, words);
-            DocumentVector2MapUtil.fillVector(m2, words);
-            //使用近义词关系更新向量
-            updateVectorWithSynonym(m1);
-            updateVectorWithSynonym(m2);
-            double denominator1 = 0, denominator2 = 0, son = 0;
-            for (Map.Entry<String, Double> e : m1.entrySet()) {
-                denominator1 += e.getValue() * e.getValue();
-                son += e.getValue() * m2.get(e.getKey());  //顺带在此循环内计算结果的分子
-            }
-            for (Map.Entry<String, Double> e : m2.entrySet()) {
-                denominator2 += e.getValue() * e.getValue();
-            }
-            result = son / Math.sqrt(denominator1 * denominator2);
-            return result;
+            return calSimilarityBetweenMap(m1, m2, true);
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("计算向量相似度出现问题。");
+            LOGGER.error("计算向量相似度出现问题。", e);
             return 0;
         }
     }
@@ -97,7 +77,8 @@ public class VectorServiceImpl implements IVectorService {
      * @return
      * @description 计算两个文本向量之间的相似度
      */
-    public double calSimilarityBetweenMap(Map<String, Double> m1, Map<String, Double> m2) {
+    public double calSimilarityBetweenMap(Map<String, Double> m1, Map<String, Double> m2, boolean useSynonym) {
+        useSynonym = false;  //效率起见，先全部关闭近义词更新
         try {
             double result = 0;
             HashSet<String> words = new HashSet<String>();
@@ -107,8 +88,10 @@ public class VectorServiceImpl implements IVectorService {
             DocumentVector2MapUtil.fillVector(m1, words);
             DocumentVector2MapUtil.fillVector(m2, words);
             //使用近义词关系更新向量
-            updateVectorWithSynonym(m1);
-            updateVectorWithSynonym(m2);
+            if (useSynonym) {
+                updateVectorWithSynonym(m1);
+                updateVectorWithSynonym(m2);
+            }
             double denominator1 = 0, denominator2 = 0, son = 0;
             for (Map.Entry<String, Double> e : m1.entrySet()) {
                 denominator1 += e.getValue() * e.getValue();
@@ -120,8 +103,7 @@ public class VectorServiceImpl implements IVectorService {
             result = son / Math.sqrt(denominator1 * denominator2);
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("计算向量相似度出现问题。");
+            LOGGER.error("计算向量相似度出现问题。", e);
             return 0;
         }
     }
@@ -156,8 +138,7 @@ public class VectorServiceImpl implements IVectorService {
             }
             return result / num;
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("计算向量相似度出现问题。");
+            LOGGER.error("计算向量相似度出现问题。", e);
             return 0;
         }
     }
@@ -174,7 +155,7 @@ public class VectorServiceImpl implements IVectorService {
         String code2 = synonymMap.get(word2);
         if (code1 != null && code2 != null) {
             if (code1.endsWith("@") || code2.endsWith("@")) {  //'@'代表自封闭的词语
-                return result;
+                return 0;
             }
             if (code1.equals(code2)) {
                 if (code1.endsWith("=")) {  //相同含义
@@ -183,10 +164,9 @@ public class VectorServiceImpl implements IVectorService {
                     return 0.9;
                 }
             }
-            for (int i = 5; i > 0; i--) {  //根据相同编码个数计算相似度
-                if (code1.substring(0, i).equals(code2.substring(0, i))) {
-                    result = (i / 5) * 0.9;
-                    return result;
+            for (int i = 0; i < 5; i++) { //根据相同编码个数计算相似度
+                if (code1.charAt(i) != code2.charAt(i)) {
+                    return ((i + 1) / 5.0) * 0.8;
                 }
             }
         }
@@ -198,17 +178,16 @@ public class VectorServiceImpl implements IVectorService {
      */
     private void updateVectorWithSynonym(Map<String, Double> m1) {
         try {
-            Set<String> words = m1.keySet();
             for (Map.Entry<String, Double> e : m1.entrySet()) {
-                if (e.getValue() - 0 < 10e-5) { //对于权重为0的向量维度
+                if (e.getValue() < 10e-5) { //对于权重为0的向量维度
                     double sim = Double.MIN_VALUE;
                     String syno = null;
-                    for (String w : words) {
-                        if (m1.get(w) - 0 > 10e-5) {
-                            double t = calSynonym(w, e.getKey());
+                    for (Map.Entry<String, Double> e2 : m1.entrySet()) {
+                        if (e2.getValue() >= 2) {
+                            double t = calSynonym(e.getKey(), e2.getKey());
                             if (t > sim) {
                                 sim = t;
-                                syno = w;
+                                syno = e2.getKey();
                             }
                         }
                     }
@@ -219,8 +198,7 @@ public class VectorServiceImpl implements IVectorService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("使用近义词关系更新向量的时候出现问题");
+            LOGGER.error("使用近义词关系更新向量的时候出现问题", e);
         }
     }
 

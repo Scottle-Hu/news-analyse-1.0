@@ -13,8 +13,9 @@ public class AnalyseApplication {
 
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("参数不足！！");
-            return;
+            System.out.println("参数不足！！默认开始all分析流程");
+            args = new String[1];
+            args[0] = "all";
         }
         String service = args[0];
         ClassPathXmlApplicationContext ctx =

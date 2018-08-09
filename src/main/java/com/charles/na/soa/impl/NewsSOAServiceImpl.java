@@ -77,7 +77,6 @@ public class NewsSOAServiceImpl implements INewsSOAService {
             return false;
         }
         try {
-            long start = System.currentTimeMillis();
             int newsNum = newsService.queryNum(today);
             int pageNum = newsNum / PAGE_SIZE + (newsNum % PAGE_SIZE == 0 ? 0 : 1);
             currentVectorThreadNum = pageNum;

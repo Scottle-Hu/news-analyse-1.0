@@ -1,0 +1,5 @@
+#jdbc properties
+jdbc.url=jdbc:mysql://58.87.113.145:3306/db_news_analyse?characterEncoding=utf8
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.username=root
+jdbc.password=charles!!!1997

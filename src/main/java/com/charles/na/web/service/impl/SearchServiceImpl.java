@@ -92,7 +92,7 @@ public class SearchServiceImpl implements ISearchService {
         List<Pair<Event, Double>> list = new ArrayList<Pair<Event, Double>>();
         for (Event e : eventList) {
             Map<String, Double> emap = splitKeywords(e.getTitle());
-            double sim = vectorService.calSimilarityBetweenMap(emap, keys);
+            double sim = vectorService.calSimilarityBetweenMap(emap, keys, true);
             Pair<Event, Double> p = new Pair<Event, Double>(e, sim);
             list.add(p);
         }

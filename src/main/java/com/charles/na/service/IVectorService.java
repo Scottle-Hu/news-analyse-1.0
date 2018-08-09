@@ -18,6 +18,6 @@ public interface IVectorService {
 
     double calSynonym(String word1, String word2);
 
-    double calSimilarityBetweenMap(Map<String, Double> m1, Map<String, Double> m2);
+    double calSimilarityBetweenMap(Map<String, Double> m1, Map<String, Double> m2, boolean useSynonym);
 
 }

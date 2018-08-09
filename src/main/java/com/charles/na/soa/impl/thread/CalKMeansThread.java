@@ -2,6 +2,7 @@ package com.charles.na.soa.impl.thread;
 
 import com.charles.na.model.DocumentVector;
 import com.charles.na.service.IVectorService;
+import com.charles.na.service.impl.ClusterServiceImpl;
 
 import java.util.HashSet;
 import java.util.List;
@@ -87,17 +88,20 @@ public class CalKMeansThread extends Thread {
                 }
             }
         }
-        threads.remove(0);
-        System.out.println("剩余线程数目：" + threads.size());
-        while (threads.size() > 0) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        synchronized (threads) {  //防止fail-fast
+            threads.remove(0);
         }
+        System.out.println("剩余线程数目：" + threads.size());
+        ClusterServiceImpl.waitOrNotify(vectorList, threads);
     }
 
+    /**
+     * 获取某个向量在canopy阶段所属的canopy的所有向量
+     *
+     * @param canopy
+     * @param dv
+     * @return
+     */
     private Set<DocumentVector> getSubCenters(Map<DocumentVector, Set<DocumentVector>> canopy, DocumentVector dv) {
         Set<DocumentVector> res = new HashSet<DocumentVector>();
         for (Map.Entry<DocumentVector, Set<DocumentVector>> e : canopy.entrySet()) {
@@ -108,7 +112,6 @@ public class CalKMeansThread extends Thread {
                 }
             }
         }
-        System.out.println("局部比较核心数目：" + res.size());
         return res;
     }
 }

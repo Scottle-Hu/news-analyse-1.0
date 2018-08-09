@@ -39,7 +39,7 @@ public class ClusterServiceImpl implements IClusterService {
 
     private static final int PAGE_SIZE = 100;
 
-    private static final int K_MEANS_MAX = 35;   //k-means聚类的最大迭代次数
+    private static final int K_MEANS_MAX = 50;   //k-means聚类的最大迭代次数
 
     private static final int CLUSTER_MIN_NUM = 3;  //若某个聚类元素个数小于该值，则舍弃该聚类
 
@@ -142,14 +142,7 @@ public class ClusterServiceImpl implements IClusterService {
             threads.add(1);
             new CalSimilarityThread(vectorList, start, end, c, cluster, removeId, vectorService, threads).start();
         }
-        //TODO 使用wait和notify
-        while (threads.size() > 0) {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        waitOrNotify(c, threads);  //!!不能直接wait，否则万一子线程非常快就会锁住
     }
 
     /**
@@ -260,15 +253,7 @@ public class ClusterServiceImpl implements IClusterService {
             threads.add(1);
             new CalKMeansThread(vectorList, start, end, cluster, removeId, vectorService, threads, canopy).start();
         }
-        //TODO 使用wait和notify
-        while (threads.size() > 0) {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
+        waitOrNotify(vectorList, threads);
     }
 
     /**
@@ -507,7 +492,7 @@ public class ClusterServiceImpl implements IClusterService {
                 }
             }
             //将聚类结果写入文件中，仅供测试使用
-            File f = new File("E:\\kmeans.txt");
+            File f = new File("D:\\kmeans.txt");
             FileOutputStream out = new FileOutputStream(f);
             int order = 1;
             for (Map.Entry<DocumentVector, Set<DocumentVector>> e : cluster.entrySet()) {
@@ -537,5 +522,28 @@ public class ClusterServiceImpl implements IClusterService {
 
     public void setDate(String date) {
         this.today = date;
+    }
+
+    /**
+     * 多线程计算的时候，当一个线程计算完成后，要么等待，要么唤醒其他线程
+     *
+     * @param obj
+     * @param threads
+     */
+    public static void waitOrNotify(Object obj, List<Integer> threads) {
+        String name = Thread.currentThread().getName();
+        if (threads.size() == 0) {
+            synchronized (obj) {
+                obj.notifyAll();
+            }
+        } else {
+            synchronized (obj) {
+                try {
+                    obj.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

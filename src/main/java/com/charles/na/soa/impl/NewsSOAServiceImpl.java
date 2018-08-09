@@ -92,7 +92,6 @@ public class NewsSOAServiceImpl implements INewsSOAService {
                 //提交线程池运行
                 pools.execute(thread);
             }
-            // TODO 创建统计线程，统计运行时间
             return true;
         } catch (Exception e) {
             e.printStackTrace();

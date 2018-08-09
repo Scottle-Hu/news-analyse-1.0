@@ -2,6 +2,7 @@ package com.charles.na.soa.impl.thread;
 
 import com.charles.na.model.DocumentVector;
 import com.charles.na.service.IVectorService;
+import com.charles.na.service.impl.ClusterServiceImpl;
 
 import java.util.Map;
 import java.util.Set;
@@ -69,13 +70,9 @@ public class CalSimilarityThread extends Thread {
                 removeId.add(dv.getId());
             }
         }
-        threads.remove(0);
-        while (threads.size() > 0) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        synchronized (threads) {
+            threads.remove(0);
         }
+        ClusterServiceImpl.waitOrNotify(c, threads);
     }
 }

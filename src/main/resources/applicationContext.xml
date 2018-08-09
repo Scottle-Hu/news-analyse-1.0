@@ -14,19 +14,13 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
     <!-- 自动扫描 -->
-    <context:component-scan base-package="com.charles.na.mapper"/>
-    <context:component-scan base-package="com.charles.na.service"/>
-    <context:component-scan base-package="com.charles.na.web.service"/>
-    <context:component-scan base-package="com.charles.na.soa"/>
-    <context:component-scan base-package="com.charles.na.spider"/>
-
+    <context:component-scan base-package="com.charles.na"/>
 
     <!-- 使用druid引入配置数据源 -->
     <import resource="druid.xml"/>
 
     <!--配置文件-->
-    <context:property-placeholder
-            location="classpath:mongo.properties,classpath:redis.properties,classpath:zookeeper.properties"/>
+    <context:property-placeholder location="classpath:*.properties"/>
 
     <!-- 配置mybatis的sqlSessionFactory -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

@@ -5,7 +5,7 @@
 
     <!--数据库连接超时的配置,单位是s-->
     <settings>
-        <setting name="defaultStatementTimeout" value="20"/>
+        <setting name="defaultStatementTimeout" value="60"/>
     </settings>
 
     <!-- 别名 -->

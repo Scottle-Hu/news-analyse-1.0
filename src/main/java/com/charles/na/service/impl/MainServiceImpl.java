@@ -27,9 +27,9 @@ public class MainServiceImpl implements IMainService {
 
     public void analyse() {
         newsSOAService.vector();
-        //创建文档向量需要等待十分钟，因为开了新线程就没管了
+        //创建文档向量需要等待五分钟，因为开了新线程就没管了
         try {
-            Thread.sleep(600000);
+            Thread.sleep(300000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

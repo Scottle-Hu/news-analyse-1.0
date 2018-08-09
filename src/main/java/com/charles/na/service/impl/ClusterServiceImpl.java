@@ -45,7 +45,7 @@ public class ClusterServiceImpl implements IClusterService {
 
     private static final int concurrentCalNum = 100;  //canopy并发计算的个数
 
-    private static final int kMeansConcurrentCalNum = 200;  //kmeans并发计算的个数
+    private static final int kMeansConcurrentCalNum = 100;  //kmeans并发计算的个数
 
     private static double allowedMaxCenterDiff = 10e-3;  //k-means中允许的最大中心变化量
 
@@ -142,6 +142,7 @@ public class ClusterServiceImpl implements IClusterService {
             threads.add(1);
             new CalSimilarityThread(vectorList, start, end, c, cluster, removeId, vectorService, threads).start();
         }
+        //TODO 使用wait和notify
         while (threads.size() > 0) {
             try {
                 Thread.sleep(3000);
@@ -259,6 +260,7 @@ public class ClusterServiceImpl implements IClusterService {
             threads.add(1);
             new CalKMeansThread(vectorList, start, end, cluster, removeId, vectorService, threads, canopy).start();
         }
+        //TODO 使用wait和notify
         while (threads.size() > 0) {
             try {
                 Thread.sleep(3000);

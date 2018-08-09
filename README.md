@@ -1,5 +1,5 @@
 # news-analyse-1.0
-version 1.0 of news analyse system
+version 1.0 of news analyse system, version 2.0 will be a distributed system
 
 - main function
   - catch news data from web periodcally
@@ -13,3 +13,10 @@ version 1.0 of news analyse system
   - cluster and topic subsystem
   - impression web subsystem
   - configuration subsystem
+  
+- project structure
+```
+.
+├── README.md
+
+```

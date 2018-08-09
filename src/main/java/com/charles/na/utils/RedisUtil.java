@@ -78,7 +78,7 @@ public class RedisUtil {
         getInstance().del(key);
     }
 
-    //测试的时候在内存中存储redis缓存的对应方法
+    //测试的时候在内存中存储替代redis缓存的对应方法
     public void set2(String key, String value) {
         cache.put(key, value);
     }

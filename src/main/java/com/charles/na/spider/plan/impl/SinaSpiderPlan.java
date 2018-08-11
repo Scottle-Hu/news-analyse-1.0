@@ -5,6 +5,7 @@ import com.charles.na.spider.ds.PriorityQueue;
 import com.charles.na.spider.plan.SpiderPlan;
 import com.charles.na.spider.producer.ProducerSpider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,7 @@ import javax.annotation.Resource;
  *
  * @author Charles
  */
+@Order(1)
 @Service("sinaPlan")
 public class SinaSpiderPlan extends SpiderPlan {
 

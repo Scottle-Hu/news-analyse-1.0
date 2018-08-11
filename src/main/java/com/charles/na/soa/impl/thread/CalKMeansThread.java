@@ -55,7 +55,6 @@ public class CalKMeansThread extends Thread {
     @Override
     public void run() {
         for (int i = start; i < end; i++) {
-//            System.out.println(i - start);
             DocumentVector dv = vectorList.get(i);
             if (removeId.contains(dv.getId())) {  //排除小众聚类
                 continue;

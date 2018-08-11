@@ -27,22 +27,6 @@ public class ClusterServiceImplTest {
     private IClusterService clusterService;
 
     @Test
-    public void test01() {
-        long start = System.currentTimeMillis();
-        Set<Long> removeId = new HashSet<Long>();
-        List<DocumentVector> src = new ArrayList<DocumentVector>();
-        //canopy粗聚类
-        Map<DocumentVector, Set<DocumentVector>> canopy = clusterService.canopyForTest(removeId, src);
-        System.out.println("canopy聚类结果：" + canopy);
-        System.out.println("canopy聚类个数：" + canopy.size());
-        System.out.println("抽样canopy耗时：" + TimeUtil.convertMillis2String(System.currentTimeMillis() - start));
-        //k-means细化聚类
-        start = System.currentTimeMillis();
-        clusterService.kMeansForTest(removeId, src, canopy);
-        System.out.println("抽样k-means耗时：" + TimeUtil.convertMillis2String(System.currentTimeMillis() - start));
-    }
-
-    @Test
     public void test02() {
         long start = System.currentTimeMillis();
         Set<Long> removeId = new HashSet<Long>();

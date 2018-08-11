@@ -58,9 +58,6 @@ public class ClusterServiceImpl implements IClusterService {
     private IVectorService vectorService;
 
     @Autowired
-    private INewsService newsService;
-
-    @Autowired
     private ClusterMapper clusterMapper;
 
     /**
@@ -73,7 +70,6 @@ public class ClusterServiceImpl implements IClusterService {
         }
         //分页读取新闻数据并进行canopy聚类
         try {
-            int newsTotalNum = documentVectorMapper.queryNum();
             //从数据库读取当天所有未处理的文本向量
             List<DocumentVector> vectorList = documentVectorMapper.findAllByDate(today);
             //聚类：中心向量 -> 该聚类的向量集合
@@ -146,34 +142,6 @@ public class ClusterServiceImpl implements IClusterService {
     }
 
     /**
-     * 测试方法，将canopy聚类中心写入文件
-     */
-    private void saveCanopyResult(Map<DocumentVector, Set<DocumentVector>> canopy, String filename) {
-        File f = new File(filename);
-        OutputStream out = null;
-        try {
-            out = new FileOutputStream(f);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        for (DocumentVector dv : canopy.keySet()) {
-            String line = dv.getNewsId() + ":" + dv.getVector() + ":" + canopy.get(dv).size() + "\r\n";
-            try {
-                out.write(line.getBytes("utf-8"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (out != null) {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
      * @param canopy 粗聚类结果
      * @description 以canopy得到的初始结果为迭代起点细化聚类，通过LDA算法提取主题，
      * 并存入数据库的t_cluster表和t_topic表
@@ -220,15 +188,16 @@ public class ClusterServiceImpl implements IClusterService {
             LOGGER.info("删除小众聚类个数：" + delNum);
             //聚类信息存入数据库
             for (Map.Entry<DocumentVector, Set<DocumentVector>> e : cluster.entrySet()) {
-                List<Cluster> clusterList = new ArrayList<Cluster>();
+                //TODO 今晚遇到cluster主键重复的问题，先简单处理，明天再细看
+                Set<Cluster> clusterSet = new HashSet<Cluster>();
                 for (DocumentVector d : e.getValue()) {
                     Cluster c = new Cluster();
                     c.setId(e.getKey().getId() + "");
                     c.setNewsId(d.getNewsId());
                     c.setDate(today);
-                    clusterList.add(c);
+                    clusterSet.add(c);
                 }
-                clusterMapper.insertMany(clusterList);
+                clusterMapper.insertMany(new ArrayList<>(clusterSet));
             }
 
         } catch (Exception e) {
@@ -242,6 +211,8 @@ public class ClusterServiceImpl implements IClusterService {
      */
     private void concurrentCalKMeans(List<DocumentVector> vectorList, Map<DocumentVector, Set<DocumentVector>> cluster,
                                      IVectorService vectorService, Set<Long> removeId, Map<DocumentVector, Set<DocumentVector>> canopy) {
+        //TODO 倒排 点->canopy中心，加快kmeans寻找局部聚类点的速度
+
         //记录当前线程数目
         List<Integer> threads = new ArrayList<Integer>();
         int size = vectorList.size();
@@ -306,220 +277,6 @@ public class ClusterServiceImpl implements IClusterService {
         return changed;
     }
 
-    //（很挫的测试办法）用于测试的canopy聚类方法，不要使用那么多数据
-    //不过之后可以考虑用于抽样程序，取T1,T2的值
-    public Map<DocumentVector, Set<DocumentVector>> canopyForTest(Set<Long> removeId, List<DocumentVector> tSourceVector) {
-        //分页读取新闻数据并进行canopy聚类
-        try {
-            int newsTotalNum = documentVectorMapper.queryNum();
-            System.out.println("新闻总数:" + newsTotalNum);
-            //每个页面随机获取十个新闻
-            List<DocumentVector> sourceVector = new ArrayList<DocumentVector>();
-            Map<String, Integer> pageInfo = new HashMap<String, Integer>();
-            pageInfo.put("pageNo", 0);
-            pageInfo.put("pageSize", PAGE_SIZE);
-            List<DocumentVector> vectorList = documentVectorMapper.findByPageInfo(pageInfo);
-            while (vectorList != null && vectorList.size() > 0) {
-                System.out.println("分页：" + pageInfo.get("pageNo"));
-                HashSet<DocumentVector> tmpSet = new HashSet<DocumentVector>();
-                if (vectorList.size() < 100) {
-                    sourceVector.addAll(vectorList);
-                    break;
-                }
-                int curSize = 100;
-                for (int i = 0; i < 5; i++) {
-                    int index = (int) (Math.random() * curSize);
-                    tmpSet.add(vectorList.get(index));
-                    vectorList.remove(index);
-                    curSize--;
-                }
-                sourceVector.addAll(tmpSet);
-                //换页
-                pageInfo.put("pageNo", pageInfo.get("pageNo") + PAGE_SIZE);
-                vectorList = documentVectorMapper.findByPageInfo(pageInfo);
-            }
-            tSourceVector.addAll(sourceVector);
-            newsTotalNum = sourceVector.size();
-            System.out.println("样本向量集合大小：" + newsTotalNum);
-            //聚类：中心向量 -> 该聚类的向量集合
-            Map<DocumentVector, Set<DocumentVector>> cluster = new HashMap<DocumentVector, Set<DocumentVector>>();
-            //聚类的中心文本向量的id
-            Set<Long> removeSet = new HashSet<Long>();
-            int iterateNum = 0;
-            int aveNum = 0;
-            double aveTotal = 0;
-            while (removeSet.size() < newsTotalNum) {  //迭代直到所有点都被移除
-                iterateNum++;
-                System.out.println("已经迭代次数：" + iterateNum);
-                System.out.println("已经移除的点：" + removeSet.size());
-                //选取一个中心
-                DocumentVector c = null;
-                for (int i = 0; i < newsTotalNum; i++) {
-                    long id = sourceVector.get(i).getId();
-                    if (!removeSet.contains(id)) {
-                        c = sourceVector.get(i);
-                        removeSet.add(id);
-                        break;
-                    }
-                }
-                if (c == null) {
-                    break;
-                }
-                cluster.put(c, new HashSet<DocumentVector>());
-                cluster.get(c).add(c);
-                for (int i = 0; i < newsTotalNum; i++) {
-                    System.out.println("No." + (i + 1));
-                    final DocumentVector dv = sourceVector.get(i);
-                    if (removeSet.contains(dv.getId())) {  //已被移除
-                        continue;
-                    }
-                    double result = vectorService.calSimilarity(c, dv);
-                    aveTotal += result;
-                    aveNum++;
-                    if (result >= T1) {
-                        System.out.println("相似度：" + result);
-                        cluster.get(c).add(dv);
-                    }
-                    if (result >= T2) {
-                        System.out.println("较高相似度：" + result);
-                        removeSet.add(dv.getId());
-                    }
-                }
-
-            }
-            System.out.println("抽样测试平均向量相似度：" + (aveTotal / aveNum));
-
-            //将结果写入文本文件，看效果。仅用于测试
-//            File f = new File("E:\\cluster.txt");
-//            FileOutputStream out = new FileOutputStream(f);
-//            int order = 1;
-//            for (Map.Entry<DocumentVector, Set<DocumentVector>> e : cluster.entrySet()) {
-//                if (e.getValue().size() < 20) {  //去除小众聚类
-//                    removeId.add(e.getKey().getId());
-//                }
-                /*out.write(("=========================================================="
-                        + "第" + order + "个聚类"
-                        + "===========================================================\r\n")
-                        .getBytes("utf-8"));
-                for (DocumentVector dv : e.getValue()) {
-                    News news = newsService.findById(dv.getNewsId());
-                    out.write(news.getTitle().getBytes("utf-8"));
-                    out.write("\r\n".getBytes("utf-8"));
-                    out.write(news.getContent().getBytes("utf-8"));
-                    out.write("\r\n".getBytes("utf-8"));
-                    out.write("\r\n".getBytes("utf-8"));
-                }
-                order++;*/
-//            }
-//            out.close();
-
-            //去除小众聚类
-            Iterator<Map.Entry<DocumentVector, Set<DocumentVector>>> it = cluster.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<DocumentVector, Set<DocumentVector>> e = it.next();
-                if (e.getValue().size() < 20) {
-                    removeId.add(e.getKey().getId());
-                    it.remove();
-                }
-            }
-            return cluster;
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("canopy聚类抽样测试的过程中出现未知问题。");
-        }
-        return null;
-    }
-
-    //k-means测试方法
-    public void kMeansForTest(Set<Long> removeId,
-                              List<DocumentVector> sourceVector, Map<DocumentVector, Set<DocumentVector>> canopy) {
-        try {
-            Map<DocumentVector, Set<DocumentVector>> cluster =
-                    new HashMap<DocumentVector, Set<DocumentVector>>();
-            //init
-            for (DocumentVector dv : canopy.keySet()) {
-                if (removeId.contains(dv.getId())) {
-                    continue;
-                }
-                cluster.put(dv, new HashSet<DocumentVector>());
-                cluster.get(dv).add(dv);
-            }
-
-            boolean goOn = true;
-            int iterateNum = 0;
-            while (goOn && iterateNum < K_MEANS_MAX) {
-                iterateNum++;
-                for (DocumentVector dv : sourceVector) {
-                    System.out.println(iterateNum + "次迭代到:" + sourceVector.indexOf(dv));
-                    if (removeId.contains(dv.getId())) {  //排除小众聚类
-                        continue;
-                    }
-                    double sim = Double.MIN_VALUE;
-                    DocumentVector tmpCenter = null;
-                    for (DocumentVector c : cluster.keySet()) {  //寻找最近的聚簇中心
-                        double tmpSim = vectorService.calSimilarity(dv, c);
-                        if (tmpSim > sim) {
-                            sim = tmpSim;
-                            tmpCenter = c;
-                        }
-                    }
-                    if (tmpCenter != null) {
-                        //从原先聚类中移除
-                        DocumentVector oldCenter = null;
-                        for (Map.Entry<DocumentVector, Set<DocumentVector>> e : cluster.entrySet()) {
-                            if (e.getValue().contains(dv)) {
-                                oldCenter = e.getKey();
-                                break;
-                            }
-                        }
-                        if (oldCenter != null) {
-                            cluster.get(oldCenter).remove(dv);
-                        }
-                        //添加到新聚类中
-                        cluster.get(tmpCenter).add(dv);
-                    }
-
-                }
-                //重新计算簇心
-                goOn = reCalClusterCenter(cluster, canopy);
-            }
-            //剔除较小的聚类
-            Iterator<Map.Entry<DocumentVector, Set<DocumentVector>>> it = cluster.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<DocumentVector, Set<DocumentVector>> e = it.next();
-                if (e.getValue().size() < CLUSTER_MIN_NUM) {
-                    it.remove();
-                }
-            }
-            //将聚类结果写入文件中，仅供测试使用
-            File f = new File("D:\\kmeans.txt");
-            FileOutputStream out = new FileOutputStream(f);
-            int order = 1;
-            for (Map.Entry<DocumentVector, Set<DocumentVector>> e : cluster.entrySet()) {
-                out.write(("=========================================================="
-                        + "第" + order + "个聚类"
-                        + "===========================================================\r\n")
-                        .getBytes("utf-8"));
-                for (DocumentVector dv : e.getValue()) {
-                    News news = newsService.findById(dv.getNewsId());
-                    out.write(news.getTitle().getBytes("utf-8"));
-                    out.write("\r\n".getBytes("utf-8"));
-                    out.write(news.getContent().getBytes("utf-8"));
-                    out.write("\r\n".getBytes("utf-8"));
-                    out.write("\r\n".getBytes("utf-8"));
-                }
-                order++;
-            }
-            out.close();
-
-            System.out.println("k-means聚类结果个数：" + --order);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("在进行抽样测试k-means聚类的时候出现未知问题。");
-        }
-    }
-
     public void setDate(String date) {
         this.today = date;
     }
@@ -546,4 +303,34 @@ public class ClusterServiceImpl implements IClusterService {
             }
         }
     }
+
+    /**
+     * 测试方法，将canopy聚类中心写入文件
+     */
+    @Deprecated
+    private void saveCanopyResult(Map<DocumentVector, Set<DocumentVector>> canopy, String filename) {
+        File f = new File(filename);
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        for (DocumentVector dv : canopy.keySet()) {
+            String line = dv.getNewsId() + ":" + dv.getVector() + ":" + canopy.get(dv).size() + "\r\n";
+            try {
+                out.write(line.getBytes("utf-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (out != null) {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

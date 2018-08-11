@@ -24,11 +24,5 @@ public interface IClusterService {
      */
     void kMeans(Map<DocumentVector, Set<DocumentVector>> canopy, Set<Long> removeId);
 
-    Map<DocumentVector, Set<DocumentVector>> canopyForTest(Set<Long> removeId,
-                                                           List<DocumentVector> tSourceVector);
-
-    void kMeansForTest(Set<Long> removeId, List<DocumentVector> sourceVector,
-                       Map<DocumentVector, Set<DocumentVector>> canopy);
-
     void setDate(String date);
 }

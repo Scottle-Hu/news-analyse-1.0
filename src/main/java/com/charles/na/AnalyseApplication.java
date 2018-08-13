@@ -32,21 +32,11 @@ public class AnalyseApplication {
         } else if (service.equals("news")) {
             System.out.println("开始news分析流程...");
             mainService.getNewsSOAService().vector();
-            try {
-                Thread.sleep(1000 * 60 * 5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             mainService.getNewsSOAService().cluster();
             mainService.getNewsSOAService().topic();
         } else if (service.equals("vector")) {
             System.out.println("开始vector分析流程...");
             mainService.getNewsSOAService().vector();
-            try {
-                Thread.sleep(1000 * 60 * 5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         } else if (service.equals("cluster")) {
             System.out.println("开始cluster分析流程...");
             mainService.getNewsSOAService().cluster();

@@ -18,7 +18,7 @@ public class IDUtil {
         while (lastestStrIds.contains(res)) {
             res = generateID2();
         }
-        if (lastestStrIds.size() > 100) {
+        if (lastestStrIds.size() > 1000) {
             lastestStrIds.poll();
         }
         lastestStrIds.offer(res);
@@ -38,7 +38,7 @@ public class IDUtil {
         while (lastestLongIds.contains(res)) {
             res = generateLongID2();
         }
-        if (lastestLongIds.size() > 100) {
+        if (lastestLongIds.size() > 1000) {
             lastestLongIds.poll();
         }
         lastestLongIds.offer(res);

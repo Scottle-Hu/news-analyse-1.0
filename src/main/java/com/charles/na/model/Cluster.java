@@ -36,4 +36,24 @@ public class Cluster {
     public void setDate(String date) {
         this.date = date;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Cluster cluster = (Cluster) o;
+
+        if (cluster.id == null || cluster.newsId == null) return false;
+
+        return cluster.id.equals(this.id) && cluster.newsId.equals(this.newsId);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (newsId != null ? newsId.hashCode() : 0);
+        result = 31 * result + (date != null ? date.hashCode() : 0);
+        return result;
+    }
 }

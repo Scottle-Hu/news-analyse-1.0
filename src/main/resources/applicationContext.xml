@@ -20,7 +20,8 @@
     <import resource="druid.xml"/>
 
     <!--配置文件-->
-    <context:property-placeholder location="classpath:*.properties"/>
+    <context:property-placeholder
+            location="classpath:jdbc.properties,classpath:mongo.properties,classpath:redis.properties,classpath:zookeeper.properties"/>
 
     <!-- 配置mybatis的sqlSessionFactory -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

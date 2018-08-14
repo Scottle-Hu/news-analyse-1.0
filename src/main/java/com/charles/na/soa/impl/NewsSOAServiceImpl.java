@@ -40,12 +40,7 @@ public class NewsSOAServiceImpl implements INewsSOAService {
     /**
      * 线程池，用于分页分别执行任务（注意：用在数据之间没有关联的情况下）
      */
-    private static ExecutorService pools = Executors.newFixedThreadPool(Constant.MAX_THREAD_NUM);
-
-    /**
-     * 记录当前正在分页执行文本向量建立任务的线程数目
-     */
-    public static volatile int currentVectorThreadNum;
+    private static ExecutorService pools = Executors.newCachedThreadPool();
 
     private String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
@@ -73,13 +68,10 @@ public class NewsSOAServiceImpl implements INewsSOAService {
     private static int PAGE_SIZE = 100;
 
     public boolean vector() {
-        if (currentVectorThreadNum > 0) { //上次的任务未执行完成
-            return false;
-        }
         try {
+            List<Integer> threads = new ArrayList<>();
             int newsNum = newsService.queryNum(today);
             int pageNum = newsNum / PAGE_SIZE + (newsNum % PAGE_SIZE == 0 ? 0 : 1);
-            currentVectorThreadNum = pageNum;
             for (int n = 0; n < pageNum; n++) {
                 Map<String, Object> pageInfo = new HashMap<String, Object>();
                 pageInfo.put("pageNo", n * PAGE_SIZE);
@@ -89,9 +81,12 @@ public class NewsSOAServiceImpl implements INewsSOAService {
                 thread.setDocumentVectorMapper(documentVectorMapper);
                 thread.setNewsService(newsService);
                 thread.setOptRecordMapper(optRecordMapper);
+                threads.add(1);
+                thread.setThreads(threads);
                 //提交线程池运行
                 pools.execute(thread);
             }
+            waitOrNotify(threads, threads);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -153,7 +148,6 @@ public class NewsSOAServiceImpl implements INewsSOAService {
                     titles.append(" ");
                 }
             }
-//            System.out.println(titles.toString());
             List<String> topicNameList = topicService.abstractKeywords(titles.toString());
             String topicName = "";
             for (String s : topicNameList) {
@@ -173,6 +167,31 @@ public class NewsSOAServiceImpl implements INewsSOAService {
     public void setDate(String date) {
         this.today = date;
         clusterService.setDate(date);
+    }
+
+    /**
+     * 多线程计算的时候，当一个线程计算完成后，要么等待，要么唤醒其他线程
+     *
+     * @param obj
+     * @param threads
+     */
+    public static void waitOrNotify(Object obj, List<Integer> threads) {
+        String name = Thread.currentThread().getName();
+        if (threads.size() == 0) {
+            synchronized (obj) {
+                obj.notifyAll();
+            }
+            System.out.println(name + " notifyAll");
+        } else {
+            System.out.println(name + " wait");
+            synchronized (obj) {
+                try {
+                    obj.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @PreDestroy

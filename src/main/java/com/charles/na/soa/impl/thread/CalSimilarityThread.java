@@ -67,7 +67,9 @@ public class CalSimilarityThread extends Thread {
                 }
             }
             if (result >= T2) {
-                removeId.add(dv.getId());
+                synchronized (removeId) {
+                    removeId.add(dv.getId());
+                }
             }
         }
         synchronized (threads) {

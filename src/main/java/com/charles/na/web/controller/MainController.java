@@ -2,7 +2,6 @@ package com.charles.na.web.controller;
 
 import com.charles.na.model.Event;
 import com.charles.na.model.EventResult;
-import com.charles.na.model.News;
 import com.charles.na.web.model.MainPageInfo;
 import com.charles.na.web.model.NameAndValue;
 import com.charles.na.web.model.User;
@@ -18,7 +17,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -91,20 +89,7 @@ public class MainController {
                 result.put("info", mainPageInfo);
             }
         }
-        OutputStream out = null;
-        try {
-            out = response.getOutputStream();
-            out.write(objectMapper.writeValueAsString(result).getBytes("utf-8"));
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        outStreamWriteJson(response, result);
     }
 
     @RequestMapping("/event")
@@ -114,7 +99,7 @@ public class MainController {
                       HttpServletResponse response) {
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-type", "text/html;charset=UTF-8");
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         //校验用户token
         if (StringUtils.isBlank(token)) {
             result.put("code", 1);
@@ -138,11 +123,11 @@ public class MainController {
                         result.put("msg", "没有查询到记录");
                         //没有数据也要填充
                         event.setCurHot(0);
-                        event.setPeopleMap(Collections.<NameAndValue>emptyList());
-                        event.setSentimentMap(Collections.<NameAndValue>emptyList());
-                        event.setNewsList(Collections.<News>emptyList());
+                        event.setPeopleMap(Collections.emptyList());
+                        event.setSentimentMap(Collections.emptyList());
+                        event.setNewsList(Collections.emptyList());
                         event.setTitle(null);
-                        event.setHotTend(Collections.<String, List>emptyMap());
+                        event.setHotTend(Collections.emptyMap());
                     } else {
                         result.put("code", 0);
                     }
@@ -150,30 +135,17 @@ public class MainController {
                 }
             }
         }
-        OutputStream out = null;
-        try {
-            out = response.getOutputStream();
-            out.write(objectMapper.writeValueAsString(result).getBytes("utf-8"));
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        outStreamWriteJson(response, result);
     }
 
     @RequestMapping("/search")
     public void event(@RequestParam(value = "key", required = false) String key,
                       @RequestParam(value = "token", required = false) String token,
-                      HttpServletResponse response, HttpServletRequest request) throws UnsupportedEncodingException {
+                      HttpServletResponse response) throws UnsupportedEncodingException {
         key = new String(key.getBytes("iso-8859-1"), "utf-8");//中文参数乱码
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-type", "text/html;charset=UTF-8");
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         //校验用户token
         if (StringUtils.isBlank(token)) {
             result.put("code", 1);
@@ -203,29 +175,16 @@ public class MainController {
                 }
             }
         }
-        OutputStream out = null;
-        try {
-            out = response.getOutputStream();
-            out.write(objectMapper.writeValueAsString(result).getBytes("utf-8"));
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        outStreamWriteJson(response, result);
     }
 
     @RequestMapping("/login")
     public void login(@RequestParam(value = "username", required = false) String username,
                       @RequestParam(value = "password", required = false) String password,
-                      HttpServletResponse response, HttpServletRequest request) throws UnsupportedEncodingException {
+                      HttpServletResponse response) throws UnsupportedEncodingException {
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-type", "text/html;charset=UTF-8");
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             result.put("code", 1);
             result.put("msg", "用户名或密码缺失");
@@ -242,20 +201,7 @@ public class MainController {
                 result.put("token", login);
             }
         }
-        OutputStream out = null;
-        try {
-            out = response.getOutputStream();
-            out.write(objectMapper.writeValueAsString(result).getBytes("utf-8"));
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        outStreamWriteJson(response, result);
     }
 
     @RequestMapping("/logout")
@@ -263,7 +209,7 @@ public class MainController {
                        HttpServletResponse response) throws UnsupportedEncodingException {
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-type", "text/html;charset=UTF-8");
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         if (StringUtils.isBlank(token)) {
             result.put("code", 1);
             result.put("msg", "token缺失");
@@ -277,20 +223,7 @@ public class MainController {
                 LOGGER.info("用户退出失败，token:" + token);
             }
         }
-        OutputStream out = null;
-        try {
-            out = response.getOutputStream();
-            out.write(objectMapper.writeValueAsString(result).getBytes("utf-8"));
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        outStreamWriteJson(response, result);
     }
 
     //根据用户查询订阅事件
@@ -299,7 +232,7 @@ public class MainController {
                           HttpServletResponse response) throws UnsupportedEncodingException {
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-type", "text/html;charset=UTF-8");
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         if (StringUtils.isBlank(token)) {
             result.put("code", 1);
             result.put("msg", "token缺失");
@@ -317,20 +250,7 @@ public class MainController {
                 result.put("info", eventList);
             }
         }
-        OutputStream out = null;
-        try {
-            out = response.getOutputStream();
-            out.write(objectMapper.writeValueAsString(result).getBytes("utf-8"));
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        outStreamWriteJson(response, result);
     }
 
     //用户订阅事件
@@ -340,7 +260,7 @@ public class MainController {
                           HttpServletResponse response) throws UnsupportedEncodingException {
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-type", "text/html;charset=UTF-8");
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         if (StringUtils.isBlank(token)) {
             result.put("code", 1);
             result.put("msg", "token缺失");
@@ -359,6 +279,23 @@ public class MainController {
                 }
             }
         }
+        outStreamWriteJson(response, result);
+    }
+
+    //检查并且更新
+    private User checkUserLoginStatus(String token) {
+        User user = userService.isLogin(token);
+        userService.updateLogin(user);
+        return user;
+    }
+
+    /**
+     * 抽取写json的公共代码
+     *
+     * @param response
+     * @param result
+     */
+    private void outStreamWriteJson(HttpServletResponse response, Object result) {
         OutputStream out = null;
         try {
             out = response.getOutputStream();
@@ -373,13 +310,6 @@ public class MainController {
                 e.printStackTrace();
             }
         }
-    }
-
-    //检查并且更新
-    private User checkUserLoginStatus(String token) {
-        User user = userService.isLogin(token);
-        userService.updateLogin(user);
-        return user;
     }
 
 

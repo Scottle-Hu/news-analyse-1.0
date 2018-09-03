@@ -80,33 +80,23 @@ public class HttpUtil {
 
     public static String getRequest(String url) {
         HttpClient client = new DefaultHttpClient();
-        //构造一级请求的url
-        HttpGet get = new HttpGet(url);
-        //设置请求头信息，防止中文乱码
-        get.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-        get.setHeader("Accept", "text/plain;charset=utf-8");
-        HttpResponse response = null;
         try {
-            response = client.execute(get);
-        } catch (IOException e) {
-            LOGGER.error("使用httpclient请求接口出现问题");
-            e.printStackTrace();
-        }
-        HttpEntity entity = response.getEntity();
-        String content = null;
-        try {
-            content = EntityUtils.toString(entity);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //关闭资源
-        client.getConnectionManager().shutdown();
-        try {  //通过请求头没法解决乱码问
+            //构造一级请求的url
+            HttpGet get = new HttpGet(url);
+            //设置请求头信息，防止中文乱码
+            get.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+            get.setHeader("Accept", "text/plain;charset=utf-8");
+            HttpResponse response = client.execute(get);
+            HttpEntity entity = response.getEntity();
+            String content = EntityUtils.toString(entity);
             return new String(content.getBytes("iso-8859-1"), "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
+        } catch (Exception e) {
+            LOGGER.error("error when send GET request to get response. url=" + url, e);
+        } finally {
+            //关闭资源
+            client.getConnectionManager().shutdown();
         }
+        return null;
     }
 
 }

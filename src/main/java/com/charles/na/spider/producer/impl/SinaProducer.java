@@ -5,6 +5,7 @@ import com.charles.na.spider.producer.ProducerSpider;
 import com.charles.na.utils.HttpUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -112,13 +113,16 @@ public class SinaProducer implements ProducerSpider {
      */
     private List<String> extractSinaUrl(String url) {
         String content = HttpUtil.getRequest(url);
+        if (StringUtils.isEmpty(content)) {
+            return Collections.emptyList();
+        }
         List<String> links = new ArrayList<>();
         int start = content.indexOf("href=\"");
         while (start != -1) {
             int end = content.indexOf("\"", start + 6);
             if (end != -1) {
                 String link = content.substring(start + 6, end);
-                if (link.contains("http") && link.contains("news.sina.com.cn")) {  //是新浪站内链接
+                if (link.contains("http") && link.contains("//news.sina.com.cn")) {  //是新浪站内链接
                     links.add(link);
                 }
             }

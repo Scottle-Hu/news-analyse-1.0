@@ -135,16 +135,12 @@ public class News {
     @Override
     public String toString() {
         return "News{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
+                "title='" + title + '\'' +
                 ", time='" + time + '\'' +
                 ", source='" + source + '\'' +
-                ", content='" + content + '\'' +
+                ", content length='" + content.length() + '\'' +
                 ", keywords='" + keywords + '\'' +
-                ", visitNum=" + visitNum +
-                ", remarkNum=" + remarkNum +
                 ", url='" + url + '\'' +
-                ", catchTime=" + catchTime +
                 '}';
     }
 }

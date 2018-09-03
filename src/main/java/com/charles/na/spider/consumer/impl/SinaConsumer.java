@@ -31,10 +31,11 @@ public class SinaConsumer extends ConsumerSpider {
         try {
             //从消费者获取的byte流构造字符串
             String link = new String(b, "utf-8");
-            //构造新闻
-            News news = buildNewsFromUrl(link);
-            //插入新闻
-            newsMapper.insert(news);
+            System.out.println(link);   //for test
+//            //构造新闻
+//            News news = buildNewsFromUrl(link);
+//            //插入新闻
+//            newsMapper.insert(news);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

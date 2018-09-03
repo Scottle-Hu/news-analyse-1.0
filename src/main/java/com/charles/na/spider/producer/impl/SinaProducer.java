@@ -2,9 +2,11 @@ package com.charles.na.spider.producer.impl;
 
 import com.charles.na.spider.ds.PriorityQueue;
 import com.charles.na.spider.producer.ProducerSpider;
+import com.charles.na.utils.HttpUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -13,7 +15,7 @@ import java.util.*;
 @Service("sinaProducer")
 public class SinaProducer implements ProducerSpider {
 
-    private String rootUrl = "http://news.sina.com";
+    private String rootUrl = "https://news.sina.com.cn/";
 
     /**
      * 已经抓取过的url列表
@@ -28,7 +30,7 @@ public class SinaProducer implements ProducerSpider {
     /**
      * 一次最多推送的新闻页面个数
      */
-    private int MAX_ARTICLE_NUM_ONCE = 1000;
+    private int MAX_ARTICLE_NUM_ONCE = 50;
 
     /**
      * 开始收集当天新浪新闻的数据并将待抓取url推到zookeeper
@@ -48,6 +50,7 @@ public class SinaProducer implements ProducerSpider {
             visitedUrlSet.add(url);
             if (isFinalNewsPage(url)) {
                 queue.produce(url.getBytes(), 1);  //将最终页面的url推送给消费者
+                pushArticleNum++;
             }
             List<String> links = extractSinaUrl(url);
             if (!CollectionUtils.isEmpty(links)) {
@@ -61,12 +64,43 @@ public class SinaProducer implements ProducerSpider {
     }
 
     /**
-     * 该页面是否为最终新闻页面，根据url形式判断
+     * 该页面是否为最终新闻页面，根据url形式判断，
+     * 例如http://news.sina.com.cn/w/2018-09-03/doc-ihiqtcan0834272.shtml
+     * 判断条件是包含：/2018-09-03/doc-类似的结构
      *
      * @param url
      * @return
      */
     private boolean isFinalNewsPage(String url) {
+        //注意：只要今天的新闻
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        if (!url.contains(date)) {
+            return false;
+        }
+        boolean beginScan = false;
+        int n = 0;
+        for (char c : url.toCharArray()) {
+            if (beginScan) {  //开始扫描验证 '/' 后面的结构
+                if (n == 16) {
+                    return true;
+                }
+                if ((((n >= 1 && n <= 4) || (n >= 6 && n <= 7) || (n >= 9 && n <= 10)) && !Character.isDigit(c))
+                        || ((n == 5 || n == 8 || n == 15) && c != '-')
+                        || (n == 11 && c != '/')
+                        || (n == 12 && c != 'd')
+                        || (n == 13 && c != 'o')
+                        || (n == 14 && c != 'c')) {  //不符合 / 后面的模式
+                    beginScan = false;
+                    n = 0;
+                } else {
+                    n++;
+                }
+            }
+            if (!beginScan && c == '/') {
+                beginScan = true;
+                n++;
+            }
+        }
         return false;
     }
 
@@ -77,7 +111,20 @@ public class SinaProducer implements ProducerSpider {
      * @return
      */
     private List<String> extractSinaUrl(String url) {
-        return Collections.emptyList();
+        String content = HttpUtil.getRequest(url);
+        List<String> links = new ArrayList<>();
+        int start = content.indexOf("href=\"");
+        while (start != -1) {
+            int end = content.indexOf("\"", start + 6);
+            if (end != -1) {
+                String link = content.substring(start + 6, end);
+                if (link.contains("http") && link.contains("news.sina.com.cn")) {  //是新浪站内链接
+                    links.add(link);
+                }
+            }
+            start = content.indexOf("href=\"", start + 6);
+        }
+        return links.size() > 0 ? links : Collections.emptyList();
     }
-    
+
 }

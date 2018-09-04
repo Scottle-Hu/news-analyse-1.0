@@ -46,7 +46,7 @@ public class SinaConsumer extends ConsumerSpider {
             }
             //插入新闻
             System.out.println(news);  //for test
-            newsMapper.insert(news);
+//            newsMapper.insert(news);
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("error when consume url.", e);
         }
@@ -109,7 +109,7 @@ public class SinaConsumer extends ConsumerSpider {
                 if (sourceStart == -1) {
                     news.setSource("来源缺失");
                 } else {
-                    int sourceEnd = content.indexOf("</a>", sourceStart);
+                    int sourceEnd = content.indexOf("</", sourceStart);
                     if (sourceEnd == -1) {
                         news.setSource("来源缺失");
                     } else {

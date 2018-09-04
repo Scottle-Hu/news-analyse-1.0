@@ -21,4 +21,5 @@ public class SinaSpiderPlanTest {
     public void testCollect() {
         sinaSpiderPlan.beginSpider();
     }
+
 }

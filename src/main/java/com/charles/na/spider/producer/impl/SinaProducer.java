@@ -82,6 +82,10 @@ public class SinaProducer implements ProducerSpider {
                 log.error("error when produce url from: " + url, e);
             }
         }
+        //队列空了导致没有新闻继续抓取，打个warning
+        if (toVisitUrlList.isEmpty()) {
+            log.warn("toVisitUrlList is empty! Producing stopped!");
+        }
     }
 
     /**

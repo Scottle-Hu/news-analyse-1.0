@@ -4,6 +4,7 @@ import com.charles.na.service.IMainService;
 import com.charles.na.service.IResultService;
 import com.charles.na.service.ITrackService;
 import com.charles.na.soa.INewsSOAService;
+import com.charles.na.spider.service.ISpiderService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -25,7 +26,13 @@ public class MainServiceImpl implements IMainService {
     @Resource
     private IResultService resultService;
 
+    @Resource
+    private ISpiderService spiderService;
+
     public void analyse() {
+        //开启爬虫
+        spiderService.collect();
+        //创建文档向量
         newsSOAService.vector();
         //创建文档向量需要等待五分钟，因为开了新线程就没管了
         try {
@@ -58,5 +65,10 @@ public class MainServiceImpl implements IMainService {
 
     public IResultService getResultService() {
         return resultService;
+    }
+
+    @Override
+    public ISpiderService getSpiderService() {
+        return spiderService;
     }
 }

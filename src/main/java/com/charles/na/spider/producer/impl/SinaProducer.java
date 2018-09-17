@@ -3,6 +3,7 @@ package com.charles.na.spider.producer.impl;
 import com.charles.na.spider.ds.PriorityQueue;
 import com.charles.na.spider.producer.ProducerSpider;
 import com.charles.na.utils.HttpUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -31,6 +32,7 @@ public class SinaProducer implements ProducerSpider {
     /**
      * 一次最多推送的新闻页面个数
      */
+    @Value("${spider.batch.num}")
     private int MAX_ARTICLE_NUM_ONCE = 20;
 
     /**

@@ -49,6 +49,9 @@ public class AnalyseApplication {
         } else if (service.equals("result")) {
             System.out.println("开始result分析流程...");
             mainService.getResultService().convert2result();
+        } else if (service.equals("spider")) {  //TODO 爬虫任务暂时不支持自选时间
+            System.out.println("开始抓取数据");
+            mainService.getSpiderService().collect();
         } else {
             System.out.println("未找到对应的执行模块!!");
         }

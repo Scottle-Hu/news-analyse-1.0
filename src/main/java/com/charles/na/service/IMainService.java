@@ -1,6 +1,7 @@
 package com.charles.na.service;
 
 import com.charles.na.soa.INewsSOAService;
+import com.charles.na.spider.service.ISpiderService;
 
 /**
  * 统一的分析类
@@ -18,5 +19,7 @@ public interface IMainService {
     ITrackService getTrackService();
 
     IResultService getResultService();
+
+    ISpiderService getSpiderService();
 
 }

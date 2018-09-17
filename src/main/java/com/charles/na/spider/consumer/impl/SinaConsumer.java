@@ -196,7 +196,7 @@ public class SinaConsumer extends ConsumerSpider {
             src = src.replace(tag, "");
             cleanStart = src.indexOf("<");
         }
-        return src;
+        return src.trim();
     }
 
 }

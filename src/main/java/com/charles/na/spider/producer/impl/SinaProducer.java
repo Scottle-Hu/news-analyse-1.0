@@ -4,6 +4,7 @@ import com.charles.na.spider.ds.PriorityQueue;
 import com.charles.na.spider.producer.ProducerSpider;
 import com.charles.na.utils.HttpUtil;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -16,6 +17,7 @@ import java.util.*;
  * @author Charles
  */
 @Service("sinaProducer")
+@Log4j
 public class SinaProducer implements ProducerSpider {
 
     private String rootUrl = "https://news.sina.com.cn/";
@@ -53,21 +55,25 @@ public class SinaProducer implements ProducerSpider {
         toVisitUrlList.offer(rootUrl);
         while (pushArticleNum < MAX_ARTICLE_NUM_ONCE && !toVisitUrlList.isEmpty()) {
             String url = toVisitUrlList.poll();
-            if (visitedUrlSet.contains(url)) {
-                continue;
-            }
-            visitedUrlSet.add(url);
-            if (isFinalNewsPage(url)) {
-                queue.produce(url.getBytes(), 1);  //将最终页面的url推送给消费者
-                pushArticleNum++;
-            }
-            List<String> links = extractSinaUrl(url);
-            if (!CollectionUtils.isEmpty(links)) {
-                links.forEach(link -> {
-                    if (!visitedUrlSet.contains(link)) {
-                        toVisitUrlList.offer(link);
-                    }
-                });
+            try {
+                if (visitedUrlSet.contains(url)) {
+                    continue;
+                }
+                visitedUrlSet.add(url);
+                if (isFinalNewsPage(url)) {
+                    queue.produce(url.getBytes(), 1);  //将最终页面的url推送给消费者
+                    pushArticleNum++;
+                }
+                List<String> links = extractSinaUrl(url);
+                if (!CollectionUtils.isEmpty(links)) {
+                    links.forEach(link -> {
+                        if (!visitedUrlSet.contains(link)) {
+                            toVisitUrlList.offer(link);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                log.error("error when produce url from: " + url, e);
             }
         }
     }

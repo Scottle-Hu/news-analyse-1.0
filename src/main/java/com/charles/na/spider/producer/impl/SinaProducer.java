@@ -47,6 +47,14 @@ public class SinaProducer implements ProducerSpider {
     @PostConstruct
     public void init() {
         log.info("init set MAX_ARTICLE_NUM_ONCE = " + MAX_ARTICLE_NUM_ONCE);
+        //定时同步url列表长度，用来作为调整队列长度限制的依据
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                log.info("toVisitUrlList length: " + toVisitUrlList.size()
+                        + ", visitedUrlSet length: " + visitedUrlSet.size());
+            }
+        }, 0, 60000);
     }
 
     /**

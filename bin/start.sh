@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /etc/profile
+
 #参数不足，至少一个参数
 if [ $# -lt 1 ];
 then

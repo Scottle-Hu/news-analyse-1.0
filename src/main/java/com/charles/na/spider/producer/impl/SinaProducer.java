@@ -148,7 +148,7 @@ public class SinaProducer implements ProducerSpider {
             if (end != -1) {
                 String link = content.substring(start + 6, end);
                 if (link.contains("http") && link.contains("//news.sina.com.cn")) {  //是新浪站内链接
-                    links.add(link);
+                    links.add(link.trim());
                 }
             }
             start = content.indexOf("href=\"", start + 6);

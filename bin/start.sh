@@ -44,7 +44,7 @@ then
 fi
 
 #jvm参数
-JAVA_OPTS="-Xmx1G -Xms256M"
+JAVA_OPTS="-Xmx1G -Xms256M -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
 
 #后台启动
 nohup $JAVA_HOME/bin/java $JAVA_OPTS -jar target/news-analyse-1.0-1.0-SNAPSHOT.jar $param 2>&1 &

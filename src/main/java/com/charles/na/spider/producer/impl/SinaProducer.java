@@ -34,6 +34,12 @@ public class SinaProducer implements ProducerSpider {
     private Queue<String> toVisitUrlList = new LinkedList<>();
 
     /**
+     * 限制待抓取队列的最大长度
+     */
+    @Value("${spider.urllist.maxsize}")
+    private int MAX_URL_LIST_SIZE;
+
+    /**
      * 一次最多推送的新闻页面个数
      */
     @Value("${spider.batch.num}")
@@ -47,6 +53,7 @@ public class SinaProducer implements ProducerSpider {
     @PostConstruct
     public void init() {
         log.info("init set MAX_ARTICLE_NUM_ONCE = " + MAX_ARTICLE_NUM_ONCE);
+        log.info("init set MAX_URL_LIST_SIZE = " + MAX_URL_LIST_SIZE);
         //定时同步url列表长度，用来作为调整队列长度限制的依据
         new Timer().schedule(new TimerTask() {
             @Override
@@ -79,7 +86,7 @@ public class SinaProducer implements ProducerSpider {
                     pushArticleNum++;
                 }
                 List<String> links = extractSinaUrl(url);
-                if (!CollectionUtils.isEmpty(links)) {
+                if (!CollectionUtils.isEmpty(links) && toVisitUrlList.size() < MAX_URL_LIST_SIZE) {
                     links.forEach(link -> {
                         if (!visitedUrlSet.contains(link)) {
                             toVisitUrlList.offer(link);

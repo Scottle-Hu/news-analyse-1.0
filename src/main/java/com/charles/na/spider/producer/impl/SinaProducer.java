@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -36,12 +37,17 @@ public class SinaProducer implements ProducerSpider {
      * 一次最多推送的新闻页面个数
      */
     @Value("${spider.batch.num}")
-    private int MAX_ARTICLE_NUM_ONCE = 20;
+    private int MAX_ARTICLE_NUM_ONCE;
 
     /**
      * 提供自主设置时间的接口
      */
     private String exactDate;
+
+    @PostConstruct
+    public void init() {
+        log.info("init set MAX_ARTICLE_NUM_ONCE = " + MAX_ARTICLE_NUM_ONCE);
+    }
 
     /**
      * 开始收集当天新浪新闻的数据并将待抓取url推到zookeeper

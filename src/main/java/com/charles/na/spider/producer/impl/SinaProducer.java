@@ -30,12 +30,7 @@ public class SinaProducer implements ProducerSpider {
     /**
      * 待抓取链接，使用优先队列
      */
-    private java.util.PriorityQueue<String> toVisitUrlList = new java.util.PriorityQueue<>(new Comparator<String>() {
-        @Override
-        public int compare(String o1, String o2) {
-            return isFinalNewsPage(o2) ? -1 : 1;
-        }
-    });
+    private Queue<String> toVisitUrlList = new LinkedList<>();
 
     /**
      * 限制待抓取队列的最大长度

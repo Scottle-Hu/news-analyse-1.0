@@ -12,4 +12,5 @@ public interface ISpiderService {
      */
     void collect();
 
+    void setDate(String date);
 }

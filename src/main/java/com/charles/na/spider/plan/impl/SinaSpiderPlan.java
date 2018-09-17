@@ -54,4 +54,9 @@ public class SinaSpiderPlan extends SpiderPlan {
          */
         sinaProducer.produce(queue);
     }
+
+    @Override
+    public void setDate(String date) {
+        this.sinaProducer.setDate(date);
+    }
 }

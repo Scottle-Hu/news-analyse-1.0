@@ -27,11 +27,18 @@ public class SpiderServiceImpl implements ISpiderService {
     @Override
     public void collect() {
         List<Integer> threads = new ArrayList<>();
-        planList.forEach( plan -> {
+        planList.forEach(plan -> {
             threads.add(1);
             plan.setThreads(threads);
             plan.start();
         });
         SpiderPlan.waitOrNotify(threads);
+    }
+
+    @Override
+    public void setDate(String date) {
+        planList.forEach(e -> {
+            e.setDate(date);
+        });
     }
 }

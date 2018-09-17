@@ -3,6 +3,7 @@ package com.charles.na.spider.producer.impl;
 import com.charles.na.spider.ds.PriorityQueue;
 import com.charles.na.spider.producer.ProducerSpider;
 import com.charles.na.utils.HttpUtil;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -34,6 +35,11 @@ public class SinaProducer implements ProducerSpider {
      */
     @Value("${spider.batch.num}")
     private int MAX_ARTICLE_NUM_ONCE = 20;
+
+    /**
+     * 提供自主设置时间的接口
+     */
+    private String exactDate;
 
     /**
      * 开始收集当天新浪新闻的数据并将待抓取url推到zookeeper
@@ -75,8 +81,9 @@ public class SinaProducer implements ProducerSpider {
      * @return
      */
     private boolean isFinalNewsPage(String url) {
-        //注意：只要今天的新闻
-        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        //注意：默认只要今天的新闻(可以设置“今天”的时间)
+        String date = exactDate == null ?
+                new SimpleDateFormat("yyyy-MM-dd").format(new Date()) : exactDate;
         if (!url.contains(date)) {
             return false;
         }
@@ -133,4 +140,8 @@ public class SinaProducer implements ProducerSpider {
         return links.size() > 0 ? links : Collections.emptyList();
     }
 
+    @Override
+    public void setDate(String date) {
+        exactDate = date;
+    }
 }

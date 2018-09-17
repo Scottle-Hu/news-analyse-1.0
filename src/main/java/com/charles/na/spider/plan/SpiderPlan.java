@@ -57,4 +57,6 @@ public abstract class SpiderPlan extends Thread {
     public void setThreads(List<Integer> threads) {
         this.threads = threads;
     }
+
+    public abstract void setDate(String date);
 }

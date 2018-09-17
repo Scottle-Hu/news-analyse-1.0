@@ -49,7 +49,7 @@ public class AnalyseApplication {
         } else if (service.equals("result")) {
             System.out.println("开始result分析流程...");
             mainService.getResultService().convert2result();
-        } else if (service.equals("spider")) {  //TODO 爬虫任务暂时不支持自选时间
+        } else if (service.equals("spider")) {
             System.out.println("开始抓取数据");
             mainService.getSpiderService().collect();
         } else {

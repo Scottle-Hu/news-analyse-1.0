@@ -15,4 +15,6 @@ public interface ProducerSpider {
      * @param queue
      */
     void produce(PriorityQueue queue);
+
+    void setDate(String date);
 }

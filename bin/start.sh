@@ -24,7 +24,7 @@ javaps=`ps -ef | grep 'news-analyse' | grep -v grep`
 
 echo $javaps
 
-if [ ! -z $javaps  ]; then
+if [ ! -z $javaps ]; then
     echo "WARNING: application has already started!"
     exit 0
 fi
@@ -54,7 +54,7 @@ echo "starting..."
 #获取pid
 javaps=`ps -ef | grep 'news-analyse' | grep -v grep`
 
-if [ -z $javaps  ]; then
+if [ -z $javaps ]; then
     echo "ERROR: failed!"
 else
     pid=`echo $javaps | awk '{print $2}'`

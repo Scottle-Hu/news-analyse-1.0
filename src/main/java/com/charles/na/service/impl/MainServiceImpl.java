@@ -52,6 +52,7 @@ public class MainServiceImpl implements IMainService {
             newsSOAService.setDate(date);
             trackService.setDate(date);
             resultService.setDate(date);
+            spiderService.setDate(date);
         }
     }
 

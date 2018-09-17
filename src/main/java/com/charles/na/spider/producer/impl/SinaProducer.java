@@ -3,7 +3,6 @@ package com.charles.na.spider.producer.impl;
 import com.charles.na.spider.ds.PriorityQueue;
 import com.charles.na.spider.producer.ProducerSpider;
 import com.charles.na.utils.HttpUtil;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,9 +28,14 @@ public class SinaProducer implements ProducerSpider {
     private Set<String> visitedUrlSet = new HashSet<>();
 
     /**
-     * 待抓取链接
+     * 待抓取链接，使用优先队列
      */
-    private Queue<String> toVisitUrlList = new LinkedList<>();
+    private java.util.PriorityQueue<String> toVisitUrlList = new java.util.PriorityQueue<>(new Comparator<String>() {
+        @Override
+        public int compare(String o1, String o2) {
+            return isFinalNewsPage(o1) ? 1 : 0;
+        }
+    });
 
     /**
      * 限制待抓取队列的最大长度

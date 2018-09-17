@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /etc/profile
+source /etc/profile >& /dev/null
 
 #参数不足，至少一个参数
 if [ $# -lt 1 ];
@@ -22,13 +22,15 @@ MAIN_CLASS_NAME="AnalyseApplication"
 #检查是否已经启动
 javaps=`ps -ef | grep $MAIN_CLASS_NAME | grep -v grep`
 
-if [ ! -n $javaps ]; then
+echo $javaps
+
+if [ ! -z $javaps ]; then
     echo "WARNING: application has already started!"
     exit 0
 fi
 
 #检查java环境变量
-if [ -n $JAVA_HOME ];
+if [ -z $JAVA_HOME ];
 then
     echo "ERROR: JAVA_HOME hasn't been set, please set JAVA_HOME."
     exit 1

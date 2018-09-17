@@ -45,8 +45,7 @@ public class SinaConsumer extends ConsumerSpider {
                 return;
             }
             //插入新闻
-            System.out.println(news);  //for test
-//            newsMapper.insert(news);
+            newsMapper.insert(news);
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("error when consume url.", e);
         }

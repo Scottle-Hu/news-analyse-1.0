@@ -18,9 +18,9 @@ fi
 MAIN_CLASS_NAME="AnalyseApplication"
 
 #检查是否已经启动
-javaps = `ps -ef | grep $MAIN_CLASS_NAME | grep -v grep`
+javaps=`ps -ef | grep $MAIN_CLASS_NAME | grep -v grep`
 
-if [ -n $javaps ]; then
+if [ ! -n $javaps ]; then
     echo "WARNING: application has already started!"
     exit 0
 fi
@@ -29,7 +29,7 @@ fi
 if [ -n $JAVA_HOME ];
 then
     echo "ERROR: JAVA_HOME hasn't been set, please set JAVA_HOME."
-    exit
+    exit 1
 fi
 
 #判断是否package
@@ -48,7 +48,7 @@ $JAVA_HOME/bin/java $JAVA_OPTS -jar ../target/news-analyse-1.0-1.0-SNAPSHOT.jar 
 echo "starting..."
 
 #获取pid
-javaps = `ps -ef | grep $MAIN_CLASS_NAME | grep -v grep`
+javaps=`ps -ef | grep $MAIN_CLASS_NAME | grep -v grep`
 
 if [ -n $javaps ]; then
     echo "ERROR: failed!"

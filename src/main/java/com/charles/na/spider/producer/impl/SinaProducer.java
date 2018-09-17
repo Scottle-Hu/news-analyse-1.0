@@ -33,7 +33,7 @@ public class SinaProducer implements ProducerSpider {
     private java.util.PriorityQueue<String> toVisitUrlList = new java.util.PriorityQueue<>(new Comparator<String>() {
         @Override
         public int compare(String o1, String o2) {
-            return isFinalNewsPage(o1) ? 1 : 0;
+            return isFinalNewsPage(o1) ? 1 : -1;
         }
     });
 

@@ -103,6 +103,7 @@ public class PriorityQueue implements Watcher, Comparator {
             List<String> children = zooKeeper.getChildren(queuePath, false);
             //没有数据或者没有消费者订阅数据
             if (children.size() == 0 || consumerList.size() == 0) {
+                //这里不能直接return，在finally中还要再注册
                 return;
             }
             Collections.sort(children, this);
@@ -114,14 +115,15 @@ public class PriorityQueue implements Watcher, Comparator {
                     c.accept(data);
                 }
             }
-            //删除之后再监听子节点变化事件,否则删除也会触发该函数，导致重复消费
-            zooKeeper.getChildren(queuePath, true);
-        } catch (KeeperException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            //删除之后再监听子节点变化事件,否则删除也会触发该函数，导致重复消费
+            try {
+                zooKeeper.getChildren(queuePath, true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

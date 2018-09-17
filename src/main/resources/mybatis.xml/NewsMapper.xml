@@ -33,5 +33,10 @@
         SELECT COUNT(*) FROM t_news WHERE catch_time=#{_param}
     </select>
 
+    <insert id="insert" parameterType="News">
+        INSERT INTO t_news VALUES (#{id}, #{title}, #{time}, #{source}, #{content},
+        #{keywords}, #{visitNum}, #{remarkNum}, #{url}, #{catchTime})
+    </insert>
+
 
 </mapper>

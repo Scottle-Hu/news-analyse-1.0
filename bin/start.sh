@@ -24,13 +24,13 @@ javaps=`ps -ef | grep 'news-analyse' | grep -v grep`
 
 echo $javaps
 
-if [ ! -z $javaps ]; then
+if [ ! -z "$javaps" ]; then
     echo "WARNING: application has already started!"
     exit 0
 fi
 
 #检查java环境变量
-if [ -z $JAVA_HOME ];
+if [ -z "$JAVA_HOME" ];
 then
     echo "ERROR: JAVA_HOME hasn't been set, please set JAVA_HOME."
     exit 1
@@ -54,7 +54,7 @@ echo "starting..."
 #获取pid
 javaps=`ps -ef | grep 'news-analyse' | grep -v grep`
 
-if [ -z $javaps ]; then
+if [ -z "$javaps" ]; then
     echo "ERROR: failed!"
 else
     pid=`echo $javaps | awk '{print $2}'`

@@ -20,11 +20,11 @@ fi
 MAIN_CLASS_NAME="AnalyseApplication"
 
 #检查是否已经启动
-javaps=`ps -ef | grep $MAIN_CLASS_NAME | grep -v grep`
+javaps=`ps -ef | grep 'news-analyse' | grep -v grep`
 
 echo $javaps
 
-if [ ! -z $javaps ]; then
+if [ ! -z $javaps  ]; then
     echo "WARNING: application has already started!"
     exit 0
 fi
@@ -37,7 +37,7 @@ then
 fi
 
 #判断是否package
-if [ ! -f "../target/news-analyse-1.0-1.0-SNAPSHOT.jar" ];
+if [ ! -f "target/news-analyse-1.0-1.0-SNAPSHOT.jar" ];
 then
     echo "ERROR: Project hasn't been build, please use mvn package to build firstly."
     exit 1
@@ -47,14 +47,14 @@ fi
 JAVA_OPTS="-Xmx1G -Xms256M"
 
 #后台启动
-$JAVA_HOME/bin/java $JAVA_OPTS -jar ../target/news-analyse-1.0-1.0-SNAPSHOT.jar $param 2>&1 &
+nohup $JAVA_HOME/bin/java $JAVA_OPTS -jar target/news-analyse-1.0-1.0-SNAPSHOT.jar $param 2>&1 &
 
 echo "starting..."
 
 #获取pid
-javaps=`ps -ef | grep $MAIN_CLASS_NAME | grep -v grep`
+javaps=`ps -ef | grep 'news-analyse' | grep -v grep`
 
-if [ -n $javaps ]; then
+if [ -z $javaps  ]; then
     echo "ERROR: failed!"
 else
     pid=`echo $javaps | awk '{print $2}'`

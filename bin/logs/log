@@ -1,0 +1,400 @@
+[main] INFO org.springframework.context.support.ClassPathXmlApplicationContext - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@4ccabbaa: startup date [Mon Sep 17 23:46:37 CST 2018]; root of context hierarchy
+[main] INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from class path resource [applicationContext.xml]
+[main] INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from class path resource [druid.xml]
+[main] INFO org.springframework.context.support.PropertySourcesPlaceholderConfigurer - Loading properties file from class path resource [jdbc.properties]
+[main] INFO org.springframework.context.support.PropertySourcesPlaceholderConfigurer - Loading properties file from class path resource [jdbc.properties]
+[main] INFO org.springframework.context.support.PropertySourcesPlaceholderConfigurer - Loading properties file from class path resource [mongo.properties]
+[main] INFO org.springframework.context.support.PropertySourcesPlaceholderConfigurer - Loading properties file from class path resource [redis.properties]
+[main] INFO org.springframework.context.support.PropertySourcesPlaceholderConfigurer - Loading properties file from class path resource [zookeeper.properties]
+[main] INFO org.springframework.context.support.PropertySourcesPlaceholderConfigurer - Loading properties file from class path resource [elitist.properties]
+[main] INFO org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor - JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+[main] INFO com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+[main] INFO org.mongodb.driver.cluster - Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:host.name=my2
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:java.version=1.8.0_45
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:java.vendor=Oracle Corporation
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:java.home=/opt/software/jdk1.8.0_45/jre
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:java.class.path=../target/news-analyse-1.0-1.0-SNAPSHOT.jar
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:java.library.path=/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:java.io.tmpdir=/tmp
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:java.compiler=<NA>
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:os.name=Linux
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:os.arch=amd64
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:os.version=3.10.0-693.2.2.el7.x86_64
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:user.name=root
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:user.home=/root
+[main] INFO org.apache.zookeeper.ZooKeeper - Client environment:user.dir=/opt/project/elitist/bin
+[main] INFO org.apache.zookeeper.ZooKeeper - Initiating client connection, connectString=58.87.113.145:2181 sessionTimeout=10000 watcher=com.charles.na.spider.ds.PriorityQueue@40f70521
+[main-SendThread(my:2181)] INFO org.apache.zookeeper.ClientCnxn - Opening socket connection to server my/58.87.113.145:2181. Will not attempt to authenticate using SASL (unknown error)
+[cluster-ClusterId{value='5b9fcc67d2b0dd2780a0880b', description='null'}-localhost:27017] INFO org.mongodb.driver.connection - Opened connection [connectionId{localValue:1, serverValue:2}] to localhost:27017
+[cluster-ClusterId{value='5b9fcc67d2b0dd2780a0880b', description='null'}-localhost:27017] INFO org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 6, 5]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=2391235}
+[main-SendThread(my:2181)] INFO org.apache.zookeeper.ClientCnxn - Socket connection established to my/58.87.113.145:2181, initiating session
+[main-SendThread(my:2181)] INFO org.apache.zookeeper.ClientCnxn - Session establishment complete on server my/58.87.113.145:2181, sessionid = 0x1659587adb5001e, negotiated timeout = 10000
+[main] INFO org.mongodb.driver.cluster - Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+[cluster-ClusterId{value='5b9fcc67d2b0dd2780a0880c', description='null'}-localhost:27017] INFO org.mongodb.driver.connection - Opened connection [connectionId{localValue:2, serverValue:3}] to localhost:27017
+[cluster-ClusterId{value='5b9fcc67d2b0dd2780a0880c', description='null'}-localhost:27017] INFO org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 6, 5]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=11048742}
+[main-EventThread] INFO com.charles.na.spider.consumer.impl.SinaConsumer - start build news from http://news.sina.com.cn/c/2018-09-17/doc-ihkhfqns0805592.shtml
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url=http://news.sina.com.cn/w/zx/2016-09-22/doc-ifxwevmf1970489.shtml
+
+java.lang.IllegalArgumentException: Illegal character in path at index 65: http://news.sina.com.cn/w/zx/2016-09-22/doc-ifxwevmf1970489.shtml
+
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in path at index 65: http://news.sina.com.cn/w/zx/2016-09-22/doc-ifxwevmf1970489.shtml
+
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.parseHierarchical(URI.java:3105)
+	at java.net.URI$Parser.parse(URI.java:3053)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url=http://news.sina.com.cn/w/zg/2016-06-28/doc-ifxtmweh2665032.shtml
+
+java.lang.IllegalArgumentException: Illegal character in path at index 65: http://news.sina.com.cn/w/zg/2016-06-28/doc-ifxtmweh2665032.shtml
+
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in path at index 65: http://news.sina.com.cn/w/zg/2016-06-28/doc-ifxtmweh2665032.shtml
+
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.parseHierarchical(URI.java:3105)
+	at java.net.URI$Parser.parse(URI.java:3053)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/p/2014-03-03/134229609798.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/p/2014-03-03/134229609798.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/p/2014-03-03/134229609798.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/c/2014-03-03/103129608485.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/c/2014-03-03/103129608485.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/c/2014-03-03/103129608485.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/s/2014-02-26/175229571365.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/s/2014-02-26/175229571365.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/s/2014-02-26/175229571365.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-02-17/112229489890.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-02-17/112229489890.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-02-17/112229489890.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/c/2014-02-13/082029452750.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/c/2014-02-13/082029452750.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/c/2014-02-13/082029452750.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-15/232429716671.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-15/232429716671.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-15/232429716671.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-15/201529716269.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-15/201529716269.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-15/201529716269.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-15/005329711213.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-15/005329711213.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-15/005329711213.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/sd/2014-03-14/193529710137.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/sd/2014-03-14/193529710137.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/sd/2014-03-14/193529710137.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-19/140929744572.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-19/140929744572.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-19/140929744572.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-18/093729734095.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-18/093729734095.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-18/093729734095.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/sd/2014-03-17/111429725712.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/sd/2014-03-17/111429725712.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/sd/2014-03-17/111429725712.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-14/153929708870.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-14/153929708870.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-14/153929708870.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-12/090229687558.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-12/090229687558.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-12/090229687558.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-18/090029733739.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-18/090029733739.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-18/090029733739.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-18/064829731844.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-18/064829731844.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-18/064829731844.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-18/032029730000.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-18/032029730000.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-18/032029730000.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-16/153229720279.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-16/153229720279.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-16/153229720279.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more
+[Thread-2] ERROR com.charles.na.utils.HttpUtil - error when send GET request to get response. url= http://news.sina.com.cn/w/2014-03-08/051829653323.shtml 
+java.lang.IllegalArgumentException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-08/051829653323.shtml 
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:69)
+	at com.charles.na.utils.HttpUtil.getRequest(HttpUtil.java:85)
+	at com.charles.na.spider.producer.impl.SinaProducer.extractSinaUrl(SinaProducer.java:117)
+	at com.charles.na.spider.producer.impl.SinaProducer.produce(SinaProducer.java:58)
+	at com.charles.na.spider.plan.impl.SinaSpiderPlan.beginSpider(SinaSpiderPlan.java:55)
+	at com.charles.na.spider.plan.SpiderPlan.run(SpiderPlan.java:29)
+Caused by: java.net.URISyntaxException: Illegal character in scheme name at index 0:  http://news.sina.com.cn/w/2014-03-08/051829653323.shtml 
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.checkChar(URI.java:3031)
+	at java.net.URI$Parser.parse(URI.java:3047)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 6 more

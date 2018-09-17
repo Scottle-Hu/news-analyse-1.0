@@ -2,9 +2,9 @@
 
 MAIN_CLASS_NAME="AnalyseApplication"
 
-javaps = `ps -ef | grep $MAIN_CLASS_NAME | grep -v grep`
+javaps=`ps -ef | grep 'news-analyse' | grep -v grep`
 
-if [ -n $javaps ]; then
+if [  -z $javaps ]; then
     echo "WARNING: application is not running!"
     exit 0
 fi
@@ -15,9 +15,9 @@ pid=`echo $javaps | awk '{print $2}'`
 
 kill -9 $pid
 
-javaps = `ps -ef | grep $MAIN_CLASS_NAME | grep -v grep`
+javaps=`ps -ef | grep 'news-analyse' | grep -v grep`
 
-if [ -n $javaps ]; then
+if [  -z $javaps ]; then
     echo "STOPPED!"
 else
     echo "ERROR: can not stop application!"

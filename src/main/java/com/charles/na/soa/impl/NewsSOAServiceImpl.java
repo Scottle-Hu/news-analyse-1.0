@@ -83,6 +83,7 @@ public class NewsSOAServiceImpl implements INewsSOAService {
                 thread.setOptRecordMapper(optRecordMapper);
                 threads.add(1);
                 thread.setThreads(threads);
+                thread.setDate(today);
                 //提交线程池运行
                 pools.execute(thread);
             }

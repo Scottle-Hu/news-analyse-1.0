@@ -10,6 +10,7 @@ import com.charles.na.service.INewsService;
 import com.charles.na.soa.impl.NewsSOAServiceImpl;
 import com.charles.na.utils.IDUtil;
 import com.charles.na.utils.TimeUtil;
+import lombok.Setter;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,9 @@ public class BuildDocumentVectorThread extends Thread {
     private OptRecordMapper optRecordMapper;
 
     private List<Integer> threads;
+
+    @Setter
+    private String date;
 
     public BuildDocumentVectorThread(Map<String, Object> pageInfo) {
         this.pageInfo = pageInfo;
@@ -75,7 +79,7 @@ public class BuildDocumentVectorThread extends Thread {
                     }
                     vector = vector.substring(0, vector.length() - (vector.length() > 1 ? 1 : 0)) + ")";
                     dv.setVector(vector);
-                    dv.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                    dv.setDate(date);
                     //插入文本向量，同样使用失败重连机制
                     queryDBToInsertVector(dv);
                 } catch (Exception e1) {

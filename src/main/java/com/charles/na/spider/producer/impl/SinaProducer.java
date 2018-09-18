@@ -160,8 +160,7 @@ public class SinaProducer implements ProducerSpider {
             int end = content.indexOf("\"", start + 6);
             if (end != -1) {
                 String link = content.substring(start + 6, end).trim();
-                if (link.startsWith("http://news.sina.com.cn")
-                        || link.startsWith("https://news.sina.com.cn")) {
+                if (link.contains("http") && link.contains("sina.com.cn")) {
                     links.add(link.trim());
                 }
             }

@@ -112,7 +112,7 @@ public class SinaProducer implements ProducerSpider {
      */
     private boolean isFinalNewsPage(String url) {
         //注意：默认只要今天的新闻(可以设置“今天”的时间)
-        String date = exactDate == null ?
+        String date = StringUtils.isEmpty(exactDate) ?
                 new SimpleDateFormat("yyyy-MM-dd").format(new Date()) : exactDate;
         if (!url.contains(date)) {
             return false;
@@ -135,8 +135,7 @@ public class SinaProducer implements ProducerSpider {
                 } else {
                     n++;
                 }
-            }
-            if (!beginScan && c == '/') {
+            } else if (c == '/') {
                 beginScan = true;
                 n++;
             }
@@ -174,4 +173,5 @@ public class SinaProducer implements ProducerSpider {
     public void setDate(String date) {
         exactDate = date;
     }
+
 }

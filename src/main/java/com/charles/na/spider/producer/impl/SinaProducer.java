@@ -4,6 +4,7 @@ import com.charles.na.spider.ds.PriorityQueue;
 import com.charles.na.spider.producer.ProducerSpider;
 import com.charles.na.utils.HttpUtil;
 import lombok.extern.log4j.Log4j;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -160,14 +161,65 @@ public class SinaProducer implements ProducerSpider {
             int end = content.indexOf("\"", start + 6);
             if (end != -1) {
                 String link = content.substring(start + 6, end).trim();
-                if (link.startsWith("http://news.sina.com.cn")
-                        || link.startsWith("https://news.sina.com.cn")) {
+                if ((link.startsWith("http://news.sina.com.cn") || link.startsWith("https://news.sina.com.cn"))
+                        && !isOldNewsLink(link)) {  //过滤掉年代久远的新闻，避免因为这些链接导致宽度遍历太发散
                     links.add(link.trim());
                 }
             }
             start = content.indexOf("href=\"", start + 6);
         }
         return links.size() > 0 ? links : Collections.emptyList();
+    }
+
+    /**
+     * 判断一个链接是否是非当天的新闻链接，如果是则过滤，因为过去的新闻不可能链接到今天的新闻
+     *
+     * @param link
+     * @return
+     */
+    private boolean isOldNewsLink(String link) {
+        if (StringUtils.isEmpty(link)) {
+            return false;
+        }
+        //先判断是不是新闻页面
+        int n = 0;
+        boolean beginScan = false, isNewsPage = false;
+        String thisDate = null;
+        for (char c : link.toCharArray()) {
+            if (beginScan) {
+                if (n == 16) {
+                    isNewsPage = true;
+                    int docIndex = link.lastIndexOf("/doc-");
+                    thisDate = link.substring(link.lastIndexOf("/", docIndex - 1) + 1, docIndex);
+                    break;
+                } else {
+                    if ((((n >= 1 && n <= 4) || (n >= 6 && n <= 7) || (n >= 9 && n <= 10)) && !Character.isDigit(c))
+                            || ((n == 5 || n == 8 || n == 15) && c != '-')
+                            || (n == 11 && c != '/')
+                            || (n == 12 && c != 'd')
+                            || (n == 13 && c != 'o')
+                            || (n == 14 && c != 'c')) {
+                        beginScan = false;
+                        n = 0;
+                    } else {
+                        n++;
+                    }
+                }
+            } else if (c == '/') {
+                beginScan = true;
+                n = 1;
+            }
+        }
+        if (!isNewsPage) {
+            return false;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String date = StringUtils.isEmpty(exactDate) ? sdf.format(new Date()) : exactDate;
+        DateTime shouldDate = new DateTime(date), actualDate = new DateTime(thisDate);
+        if (actualDate.isBefore(shouldDate)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

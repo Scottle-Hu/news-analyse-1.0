@@ -40,6 +40,17 @@ public class SinaProducerTest {
         });
     }
 
+    @Test
+    public void testIsOldNewsLink() {
+        String url = "http://news.sina.com.cn/w/2018-09/idoc-ihiqtcan0834272.shtml";
+        assert !callIsOldNewsLink(url);
+        url = "http://news.sina.com.cn/w/2018-09-03/doc-ihiqtcan0834272.shtml";
+        assert callIsOldNewsLink(url);
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        url = "http://news.sina.com.cn/w/" + date + "/doc-ihiqtcan0834272.shtml";
+        assert !callIsOldNewsLink(url);
+    }
+
     private boolean callIsFinalPageFunction(String url) {
         Class cls = SinaProducer.class;
         for (Method method : cls.getDeclaredMethods()) {
@@ -72,6 +83,22 @@ public class SinaProducerTest {
             }
         }
         return Collections.emptyList();
+    }
+
+    private boolean callIsOldNewsLink(String url) {
+        try {
+            Class cls = SinaProducer.class;
+            Method method = cls.getDeclaredMethod("isOldNewsLink", String.class);
+            method.setAccessible(true);
+            return (Boolean) method.invoke(producer, url);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

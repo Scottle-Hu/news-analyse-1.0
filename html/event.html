@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Seek舆情分析系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- 引入 bootstrap 文件 -->
+    <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <script src="./bootstrap/js/jquery-1.11.2.min.js"></script>
+    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css"/>
+    <!-- 引入 echarts.js -->
+    <script src="echarts-wordcloud-master/echarts.min.js"></script>
+    <script src="echarts-wordcloud-master/dist/echarts-wordcloud.min.js"></script>
+    <script src="echarts-wordcloud-master/dist/echarts-wordcloud.js"></script>
+    <script src="echarts-wordcloud-master/vintage.js"></script>
+
+    <link href="./files/bootplus.52f2640b756c.css" rel="stylesheet">
+    <link href="./files/font-awesome.min.295235b28b6e.css" rel="stylesheet">
+    <link href="./files/hue3.a43c49bb66c6.css" rel="stylesheet">
+    <link href="./files/fileuploader.b6d0033d0363.css" rel="stylesheet">
+    <link href="./files/bootstrap-table.min.7977c83e106d.css" rel="stylesheet">
+    <link href="./files/modal.8f192f6dd428.css" rel="stylesheet" type="text/css">
+    <link href="./files/common.70c3e94290fb.css" rel="stylesheet" type="text/css">
+    <script src="./files/modal.98b21048e2c7.js" type="text/javascript" charset="utf-8"></script>
+    <script src="./files/three.min.18eb03c97237.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="./files/login.dba93be02e9f.css">
+    <link rel="stylesheet" href="./files/chosen.min.9ed7949517ef.css">
+
+    <!--引入在线jq-->
+    <link rel="stylesheet" href="./jquery-ui/jquery-ui.css">
+    <script src="./jquery-ui/jquery-ui.js"></script>
+    <style>
+        body {
+            margin-top: 0px;
+            margin-left: 0px;
+            width: 100%;
+            background: -webkit-linear-gradient(left top, blue, yellow); /* Safari 5.1 - 6.0 */
+            background: -o-linear-gradient(bottom right, blue, yellow); /* Opera 11.1 - 12.0 */
+            background: -moz-linear-gradient(bottom right, blue, yellow); /* Firefox 3.6 - 15 */
+            background: linear-gradient(to bottom right, blue, yellow); /* 标准的语法 */
+        }
+
+        .top {
+            background: black;
+            height: 90px;
+            margin-top: 0px;
+            position: fixed;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .top-btn {
+            width: 65px;
+            height: 20px;
+            margin-right: 20px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 宋体;
+            border: none;
+            cursor: pointer;
+        }
+
+        .user-info {
+            color: white;
+            float: right;
+            margin-right: 6%;
+        }
+
+        .search-input {
+            margin-left: 30px;
+        }
+
+        .container {
+            float: left;
+            margin-top: 30px;
+            margin-left: 30px;
+        }
+
+        .container table tr td {
+            font-size: 17px;
+            color: red;
+            text-align: center;
+        }
+
+        .container table tr th {
+            text-align: center;
+        }
+
+        .container table {
+            background: lightblue;
+        }
+
+        .container .article {
+            padding: 10px;
+            background: pink;
+            margin: 10px;
+            border-radius: 10px;
+        }
+
+        #main-title {
+            cursor: pointer;
+        }
+
+    </style>
+    <style data-module="UI" type="text/css">.UI-lawyer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        overflow: visible
+    }
+
+    .UI-lawyer a, .UI-lawyer a:hover, .UI-lawyer a:active {
+        outline: none;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent
+    }
+
+    .UI-mask {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, .5);
+        visibility: hidden;
+        transition: .2s;
+        opacity: 0
+    }
+
+    .UI-mask-show {
+        visibility: visible;
+        opacity: 1
+    }
+
+    .UI-noscroll {
+        overflow: hidden
+    }
+
+    .UI_pop {
+        width: 200px;
+        position: absolute;
+        top: 400px;
+        left: 300px;
+        background: #fff;
+        box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.6)
+    }
+
+    .UI_pop_cpt {
+        position: relative;
+        height: 36px;
+        line-height: 36px;
+        overflow: hidden;
+        border-bottom: 1px solid #ebebeb;
+        color: #777;
+        font-size: 16px;
+        text-indent: 15px;
+        cursor: default
+    }
+
+    .UI_pop .UI_cnt {
+        position: relative;
+        min-height: 100px;
+        overflow: auto
+    }
+
+    .UI-button {
+        display: inline-block;
+        line-height: 1;
+        white-space: nowrap;
+        cursor: pointer;
+        background: #fff;
+        border: 1px solid #c4c4c4;
+        color: #1f2d3d;
+        -webkit-appearance: none;
+        text-align: center;
+        box-sizing: border-box;
+        outline: none;
+        margin: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        padding: 10px 15px;
+        font-size: 14px;
+        border-radius: 4px;
+        transition: .2s ease-in-out
+    }
+
+    .UI-button-ok {
+        color: #fff;
+        background-color: #20a0ff;
+        border-color: #20a0ff
+    }
+
+    .UI-button-ok:hover {
+        background: #0088f0;
+        color: #8accfe;
+        border-color: #0070c7
+    }
+
+    .UI-button-ok:active {
+        background: #0070c7;
+        color: #b4dfff
+    }
+
+    .UI-button-cancel {
+        margin-right: 10px;
+        color: #818182
+    }
+
+    .UI-button-cancel:hover {
+        background: #f7f7f7;
+        color: #6d8ba2
+    }
+
+    .UI-button-cancel:active {
+        background: #d8d4d4;
+        color: #2c4c67
+    }
+
+    .UI-close-btn {
+        display: block;
+        position: absolute;
+        top: 12px;
+        right: 15px;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        color: #bfcbd9;
+        font: 200 30px/26px "simsun";
+        transition: 0.1s
+    }
+
+    .UI-close-btn:hover {
+        color: #888
+    }
+
+    .UI-close-btn:active {
+        color: #222
+    }
+
+    .UI-confirm {
+        position: absolute;
+        width: 420px;
+        background: #fff;
+        overflow: hidden;
+        text-align: left;
+        vertical-align: middle;
+        border-radius: 3px;
+        font-size: 16px;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden
+    }
+
+    .UI-confirm-title {
+        position: relative;
+        padding: 20px 20px 0
+    }
+
+    .UI-confirm-icon {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 45%;
+        left: 24px;
+        margin-top: -20px
+    }
+
+    .UI-confirm-icon svg {
+        display: block;
+        width: 100%
+    }
+
+    .UI-confirm-content {
+        max-height: 350px;
+        padding: 30px 20px;
+        color: #48576a;
+        font-size: 14px;
+        overflow: auto
+    }
+
+    .UI-confirm-with-icon {
+        padding-left: 80px
+    }
+
+    .UI-confirm-footer {
+        padding: 10px 20px 15px;
+        text-align: right
+    }
+
+    .UI-confirm-text {
+        padding: 30px 10px 20px;
+        line-height: 26px;
+        text-align: center;
+        font-size: 20px;
+        color: #333
+    }
+
+    .UI_pop_confirm a {
+        display: inline-block;
+        width: 50%;
+        font-size: 14px;
+        line-height: 36px;
+        color: #03f;
+        transition: 0.15s
+    }
+
+    .UI_pop_confirm a:hover {
+        background: #eee
+    }
+
+    .UI_pop_confirm_ok {
+        border-right: 1px solid #ddd
+    }
+
+    .UI-notification {
+        position: fixed;
+        width: 330px;
+        min-height: 90px;
+        right: 16px;
+        background: #fff;
+        border-radius: 2px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+        transition: opacity .3s, transform .3s, right .3s, top .4s;
+        -webkit-animation: UI-notification-in 0.2s ease-out both;
+        animation: UI-notification-in 0.2s ease-out both
+    }
+
+    .UI-notification-icon {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 24px;
+        left: 24px
+    }
+
+    .UI-notification-icon svg {
+        display: block;
+        width: 100%
+    }
+
+    .UI-notification-body {
+        padding: 20px
+    }
+
+    .UI-notification-body-with-icon {
+        padding-left: 80px
+    }
+
+    .UI-notification-title {
+        padding-right: 20px;
+        font-weight: 400;
+        font-size: 16px;
+        color: #1f2d3d
+    }
+
+    .UI-notification-message {
+        font-size: 14px;
+        line-height: 21px;
+        margin: 10px 0 0;
+        color: #8391a5;
+        text-align: justify
+    }
+
+    .UI-notification-out {
+        opacity: 0
+    }
+
+    .UI-notification .UI_cnt {
+        padding: 30px 10px;
+        font-size: 18px;
+        color: #333;
+        text-align: center
+    }
+
+    @-webkit-keyframes UI-notification-in {
+        0% {
+            -webkit-transform: translateX(120%)
+        }
+        100% {
+            -webkit-transform: translateX(0)
+        }
+    }
+
+    @keyframes UI-notification-in {
+        0% {
+            transform: translateX(120%)
+        }
+        100% {
+            transform: translateX(0)
+        }
+    }
+
+    /** * CSS3动画 * **/
+    @-webkit-keyframes UI-fadeInDown {
+        0% {
+            opacity: 0;
+            -webkit-transform: translateY(-15px)
+        }
+        100% {
+            opacity: 1;
+            -webkit-transform: translateY(0)
+        }
+    }
+
+    @keyframes UI-fadeInDown {
+        0% {
+            opacity: 0;
+            transform: translateY(-15px)
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+
+    @-webkit-keyframes UI-fadeOutUp {
+        0% {
+            opacity: 1;
+            -webkit-transform: translateY(0)
+        }
+        100% {
+            opacity: 0;
+            -webkit-transform: translateY(-15px)
+        }
+    }
+
+    @keyframes UI-fadeOutUp {
+        0% {
+            opacity: 1;
+            transform: translateY(0)
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-15px)
+        }
+    }
+
+    .UI-fadeIn {
+        -webkit-animation: UI-fadeInDown 0.2s ease both;
+        animation: UI-fadeInDown 0.2s ease both
+    }
+
+    .UI-fadeOut {
+        -webkit-animation: UI-fadeOutUp 0.2s ease both;
+        animation: UI-fadeOutUp 0.2s ease both
+    }</style>
+</head>
+<script>
+    //从url获取参数
+    var thisUrl = window.location.href;
+    var param = parseQueryStr(thisUrl);
+    var end = param.end;
+    var token = param.token;
+    var id = param.id;
+    if (token == null) {
+        window.location.href = "index.html";
+    }
+    function parseQueryStr(queryStr) {
+        let queryData = {};
+        let splitText = queryStr.substr(queryStr.indexOf('?') + 1);
+        let queryStrList = splitText.split('&');
+        for (let [index, splitText] of queryStrList.entries()) {
+            let itemList = splitText.split('=');
+            queryData[itemList[0]] = decodeURIComponent(itemList[1]);
+        }
+        return queryData
+    }
+    //订阅事件
+    function subscribeThis() {
+        $.ajax({
+            url: "http://elitist.huqj.top/web/subscribe.do",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                token: token,
+                eventId: id
+            },
+            success: function (res) {
+                var result = eval(res);
+                console.log("ajax请求结果：" + result.code);
+                if (result.code != 0) {
+                    console.log("请求失败原因：" + result.msg);
+                    alert(result.msg);
+                }
+                else {
+                    alert("订阅成功！您可在个人中心查看.");
+                }
+
+            },
+            error: function () {
+                alert("数据请求失败，请稍候重试。");
+            }
+        });
+    }
+
+    $("#personal-btn").click(function () {
+        window.location.href = "personal.html?token=" + token;
+    });
+
+    $(document).ready(function () {
+        $("#search-btn").click(function () {
+            var kw = $("#search-text").val();
+            if (kw == "") {
+                alert("请输入查询关键词!");
+                return;
+            }
+            window.location.href = "search.html?token=" + token + "&key=" + kw;
+        });
+        //ajax请求查询接口
+        $.ajax({
+            url: "http://elitist.huqj.top/web/event.do",
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                end: end,
+                token: token,
+                id: id
+            },
+            success: function (res) {
+                var result = eval(res);
+                console.log("ajax请求结果：" + result.code);
+                //console.log(result.event);
+                var event = result.event;
+                var title = event.title;
+                var hot_x = event.hotTend.x;
+                var hot_y = event.hotTend.y;
+                var curHot = event.curHot;
+                var viewPoint = event.viewPoint;
+                var sentiment = event.sentimentMap;
+                var people = event.peopleMap;
+                if (people.length == 0) {
+                    people[0] = {"无": 1};
+                }
+                //alert(people);
+                $("#username").text(result.username);
+                //设置标题
+                $("#event-title").text(title);
+                //设置话题热度
+                var myChart = echarts.init(document.getElementById('a'));
+                // 指定图表的配置项和数据
+                var option = {
+                    title: {
+                        text: '话题热度趋势',
+                        x: 'center'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: hot_x
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        data: hot_y,
+                        type: 'line',
+                        smooth: true
+                    }]
+                };
+                myChart.setOption(option);
+
+                var myChart2 = echarts.init(document.getElementById('b'));
+                var option2 = {
+                    title: {
+                        text: '观测点热度',
+                        x: 'center'
+                    },
+                    tooltip: {
+                        formatter: "{a} <br/>{b} : {c}%"
+                    },
+                    series: [
+                        {
+                            name: '话题热度',
+                            type: 'gauge',
+                            detail: {formatter: '{value}%'},
+                            data: [{value: curHot, name: viewPoint}]
+                        }
+                    ]
+                };
+                myChart2.setOption(option2);
+                //设置情感倾向
+                var myChart3 = echarts.init(document.getElementById('d'));
+                var option3 = {
+                    title: {
+                        text: '舆论情感倾向',
+                        subtext: '',
+                        x: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: ['good', 'fear', 'evil', 'anger', 'surprise', 'sorrow', 'happy']
+                    },
+                    series: [
+                        {
+                            name: '情感倾向',
+                            type: 'pie',
+                            radius: '55%',
+                            center: ['50%', '60%'],
+                            data: sentiment,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+                myChart3.setOption(option3);
+                //设置热点人物
+                var myChart4 = echarts.init(document.getElementById('tag-cloud'));
+                var option4 = {
+                    title: {
+                        text: '相关人物',
+                        x: 'center'
+                    },
+                    series: [{
+                        type: 'wordCloud',
+                        shape: 'circle',
+                        left: 'center',
+                        top: 'center',
+                        width: '80%',
+                        height: '80%',
+                        right: null,
+                        bottom: null,
+                        sizeRange: [12, 60],
+                        rotationRange: [-90, 90],
+                        rotationStep: 45,
+                        drawOutOfBound: false,
+                        textStyle: {
+                            normal: {
+                                fontFamily: 'sans-serif',
+                                fontWeight: 'bold',
+                                color: function () {
+                                    return 'rgb(' + [
+                                            Math.round(Math.random() * 200),
+                                            Math.round(Math.random() * 200),
+                                            Math.round(Math.random() * 200)
+                                        ].join(',') + ')';
+                                }
+                            },
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: '#333'
+                            }
+                        },
+                        data: people
+                    }]
+                }
+                myChart4.setOption(option4);
+                //填充新闻列表
+                var news = event.newsList;
+                var newsContent = "";
+                for (var i = 0; i < news.length; i = i + 1) {
+                    newsContent = newsContent + "<a target='_blank' href='" + news[i].url + "'><div class='article'><h4>" + news[i].title + "&nbsp;&nbsp;<small>" + news[i].source + "</small></h4><hr/><p>" + news[i].content + "</p></div></a>";
+                }
+                newsContent = newsContent + "<a style='margin-left:20px;margin-top:20px;margin-bottom:20px;' target='_blank' href='http://www.baidu.com/s?wd=" + title + "'>了解更多...</a>";
+                $("#news-list").html(newsContent);
+
+            },
+            error: function () {
+                alert("数据请求失败，请稍候重试。");
+            }
+        });
+        //退出按钮
+        $("#logout-btn").click(function () {
+            $.ajax({
+                url: "http://elitist.huqj.top/web/logout.do",
+                type: 'POST',
+                dataType: 'json',
+                timeout: 5000,
+                data: {
+                    token: token
+                },
+                success: function (res) {
+                    //alert(res.code);
+                    window.location.href = "index.html";
+                },
+                error: function () {
+                    window.location.href = "index.html";
+                }
+            });
+        });
+        //去首页
+        $("#main-title").click(function () {
+            window.location.href = "main.html?token=" + token;
+        });
+    });
+
+</script>
+<body>
+<div onclick="subscribeThis()"
+     style="position:fixed;left:2px;top:50%;z-index:2;background:gray;padding:10px;color:white;border-radius:10px;opacity:0.8;cursor:pointer;">
+    订阅
+</div>
+<div id="bgContainer" style="margin:0 auto;width:100%;height: 100%;position:fixed;z-index:-2;left:0;top:0;">
+</div>
+<div class='top'>
+    <br/>
+    <h1 style="color:blue;margin-top:7px;margin-left:4%;float:left;" id="main-title">Seek网络舆情分析系统</h1>
+    <div class='user-info'>
+        欢迎您，<span id="username"></span>
+        <br/>
+        <button type="button" class='top-btn' style="background:blue;color:white;" id="personal-btn">个人中心</button>
+        <button type="button" class='top-btn' style="background:red;color:white;" id="logout-btn">安全退出</button>
+    </div>
+    <img src='./image/others.jpg'
+         style="float:right;width:50px;height:50px;border-radius:25px;margin-right:40px;"/>
+</div>
+<div style="height:100px;"></div>
+<h2 style="margin-left:50px;float:left;" id="event-title"></h2>
+<div class='search-input' style="float:left;margin-top:15px;">
+    <input placeholder=" 输入你感兴趣的话题..." id="search-text" name='keyword'
+           style="width:250px;height:20px;border-radius:20px;border:none;"/>
+    <img src='./image/search-button.png' id="search-btn" width="28px" style="vertical-align:bottom;"/>
+</div>
+<iframe width="280" scrolling="no" height="25" frameborder="0" style="float:right;margin-top:20px;margin-right:5%;"
+        allowtransparency="true" src="http://i.tianqi.com/index.php?c=code&id=34&icon=1&num=3">
+</iframe>
+<div style="clear:both;"></div>
+<div id="a" class="container"
+     style="width:720px;height:450px;opacity:0.95;background:lightblue;border-radius:15px;"></div>
+<div id="b" class="container"
+     style="margin-left:50px;width:600px;height:450px;opacity:0.95;background:lightblue;border-radius:15px;"></div>
+<div id="d" class="container"
+     style="margin-left:50px;width:600px;height:400px;opacity:0.95;background:lightblue;border-radius:15px;"></div>
+<div class="container" id="tag-cloud"
+     style="margin-left:50px;width:350px;height:400px;background:lightblue;opacity:0.95;border-radius:15px;"></div>
+<div class="container" id="news-list"
+     style="margin-left:30px;width:400px;opacity:0.85;background:lightgreen;border-radius:15px;">
+</div>
+</script>
+<
+div
+style = "clear:both;" > < / div >
+    < footer
+id = "footer-instruction"
+style = "margin-top:50px;margin-bottom:20px;" >
+    < center > < p > & copy;
+2018
+本系统为信息管理课程设计demo < / p > < center >
+< / footer >
+< / body >
+< script >
+var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50;
+
+var container;
+var camera, scene, renderer;
+
+var particles, particle, count = 0;
+
+var mouseX = 0, mouseY = 0;
+
+var windowHalfX = window.innerWidth / 2;
+var windowHalfY = window.innerHeight / 2;
+
+init();
+animate();
+
+function init() {
+
+    container = document.getElementById('bgContainer');
+
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.z = 1000;
+
+    scene = new THREE.Scene();
+
+    particles = new Array();
+
+    var PI2 = Math.PI * 2;
+    var material = new THREE.ParticleCanvasMaterial({
+
+        color: 0xffffff,
+        program: function (context) {
+
+            context.beginPath();
+            context.arc(0, 0, 1, 0, PI2, true);
+            context.fill();
+
+        }
+
+    });
+
+    var i = 0;
+
+    for (var ix = 0; ix < AMOUNTX; ix++) {
+
+        for (var iy = 0; iy < AMOUNTY; iy++) {
+
+            particle = particles[i++] = new THREE.Particle(material);
+            particle.position.x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
+            particle.position.z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+            scene.add(particle);
+
+        }
+
+    }
+
+    renderer = new THREE.CanvasRenderer();
+    renderer.setSize(window.innerWidth - 10, window.innerHeight - 10);
+    container.appendChild(renderer.domElement);
+
+    document.addEventListener('mousemove', onDocumentMouseMove, false);
+    document.addEventListener('touchstart', onDocumentTouchStart, false);
+    document.addEventListener('touchmove', onDocumentTouchMove, false);
+
+    //
+
+    window.addEventListener('resize', onWindowResize, false);
+
+}
+
+function onWindowResize() {
+
+    windowHalfX = window.innerWidth / 2;
+    windowHalfY = window.innerHeight / 2;
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth - 10, window.innerHeight - 10);
+
+}
+
+//
+
+function onDocumentMouseMove(event) {
+
+    mouseX = event.clientX - windowHalfX;
+    mouseY = event.clientY - windowHalfY;
+
+}
+
+function onDocumentTouchStart(event) {
+
+    if (event.touches.length === 1) {
+
+        event.preventDefault();
+
+        mouseX = event.touches[0].pageX - windowHalfX;
+        mouseY = event.touches[0].pageY - windowHalfY;
+
+    }
+
+}
+
+function onDocumentTouchMove(event) {
+
+    if (event.touches.length === 1) {
+
+        event.preventDefault();
+
+        mouseX = event.touches[0].pageX - windowHalfX;
+        mouseY = event.touches[0].pageY - windowHalfY;
+
+    }
+
+}
+
+//
+
+function animate() {
+
+    requestAnimationFrame(animate);
+
+    render();
+
+
+}
+
+function render() {
+
+    camera.position.x += ( mouseX - camera.position.x ) * .05;
+    camera.position.y += ( -mouseY - camera.position.y ) * .05;
+    camera.lookAt(scene.position);
+
+    var i = 0;
+
+    for (var ix = 0; ix < AMOUNTX; ix++) {
+
+        for (var iy = 0; iy < AMOUNTY; iy++) {
+
+            particle = particles[i++];
+            particle.position.y = ( Math.sin(( ix + count ) * 0.3) * 50 ) + ( Math.sin(( iy + count ) * 0.5) * 50 );
+            particle.scale.x = particle.scale.y = ( Math.sin(( ix + count ) * 0.3) + 1 ) * 2 + ( Math.sin(( iy + count ) * 0.5) + 1 ) * 2;
+
+        }
+
+    }
+
+    renderer.render(scene, camera);
+
+    count += 0.1;
+
+}
+
+</script>
+</html>

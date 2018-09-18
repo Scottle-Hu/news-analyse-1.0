@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="echarts.min.js"></script>
+    <script src="echarts-wordcloud-master/dist/echarts-wordcloud.min.js"></script>
+    <script src="echarts-wordcloud-master/dist/echarts-wordcloud.js"></script>
+    <script src="vintage.js"></script>
+</head>
+<body onLoad="load()">
+    <div id="c" style="width: 600px;height:400px;float:left;"></div>
+     <script >
+	 	var result;
+	 	var url = "http://58.87.113.145:8080/na-static";
+	 	function load(){
+		//创建ajax核心对象
+         var xmlHttp;
+         //判断当前浏览器是否有内置XmlHttp对象
+         if(window.XMLHttpRequest){
+              xmlHttp = new XMLHttpRequest();
+         }else{
+              xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+         }
+
+         //测试ajax提交参数请求
+         xmlHttp.open("get",url+'/tags',false);
+         xmlHttp.send(); 
+
+         //重写onreadystatechange方法,用以显示状态变化(每次状态变化的时候显示)
+         xmlHttp.onreadystatechange=function(){
+              //当请求成功的时候往文本框中填入返回的数据
+              if(xmlHttp.readyState==4 && xmlHttp.status==200){
+				result = xmlHttp.responseText;
+				alert(result);
+              }
+         };
+		}
+		var myChart = echarts.init(document.getElementById('c'),'vintage');
+		var option = {
+			title: {
+                text: '热点词云',
+				x:'center'
+            },
+   			series: [{
+        	type: 'wordCloud',
+			shape: 'circle',
+			//maskImage: maskImage,
+        	left: 'center',
+        	top: 'center',
+ 			width: '70%',
+			height: '80%',
+			right: null,
+			bottom: null,
+			sizeRange: [12, 60],
+			rotationRange: [-90, 90],
+        	rotationStep: 45,
+        	drawOutOfBound: false,
+        	textStyle: {
+            	normal: {
+                	fontFamily: 'sans-serif',
+                	fontWeight: 'bold',
+                // Color can be a callback function or a color string
+                	color: function () {
+                    // Random color
+						return 'rgb(' + [
+                       	Math.round(Math.random() * 160),
+                        Math.round(Math.random() * 160),
+                        Math.round(Math.random() * 160)
+                    	].join(',') + ')';
+               		}
+           		},
+            	emphasis: {
+                	shadowBlur: 10,
+                	shadowColor: '#333'
+            	}
+        	},
+
+        // Data is an array. Each array item must have name and value property.
+        	data: [
+            	{name: '西瓜',value: 390,},
+				{name: '橙子',value: 402,},
+				{name: '苹果',value: 365,},
+				{name: '香蕉',value: 288,},
+				{name: '火龙果',value: 210,},
+				{name: '葡萄',value: 140,},
+				{name: '橘子',value: 120},
+				{name: '杏子',value: 5,},
+				{name: '海棠果',value: 13,},
+				{name: '杨桃',value: 60,},
+				{name: '樱桃',value: 80,},
+				{name: '板栗',value: 8,},
+				{name: '猕猴桃',value: 100,},
+				{name: '椰子',value: 14,},
+				{name: '毛桃',value: 16,},
+				{name: '荔枝',value: 26,},
+				{name: '青梅',value: 14,},
+				{name: '柠檬',value: 46,},
+				{name: '枇杷',value: 28,},			
+				{name: '梨',value: 86,},
+				{name: '菠萝',value: 43,},
+				{name: '草莓',value: 55,}			
+			]
+    		}]
+		}
+		myChart.setOption(option);
+	</script>
+    </body>
+</html>

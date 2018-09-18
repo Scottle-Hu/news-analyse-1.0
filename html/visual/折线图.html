@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    	<title>ECharts折线图</title>
+        <!-- 引入 echarts.js -->
+        <script src="echarts.min.js"></script>
+        <script src="echarts-wordcloud-master/dist/echarts-wordcloud.min.js"></script>
+        <script src="echarts-wordcloud-master/dist/echarts-wordcloud.js"></script>
+        <script src="vintage.js"></script>
+    </head>
+	<body>
+        <div id="a" style="width: 600px;height:400px;float:left;"></div>
+        <script type="text/javascript">
+            var myChart = echarts.init(document.getElementById('a'), 'vintage');
+    
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: '热度变化趋势',
+                    x:'center'
+                },
+                xAxis: {
+                type: 'category',
+                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: [820, 932, 901, 934, 1290, 1330, 1320],
+                    type: 'line',
+                    smooth: true
+                }]
+            };
+    
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+        </script>
+	</body>
+</html>

@@ -88,9 +88,7 @@ public class SinaProducer implements ProducerSpider {
                 List<String> links = extractSinaUrl(url);
                 if (!CollectionUtils.isEmpty(links) && toVisitUrlList.size() < MAX_URL_LIST_SIZE) {
                     links.forEach(link -> {
-                        if (!visitedUrlSet.contains(link)) {
-                            toVisitUrlList.offer(link);
-                        }
+                        toVisitUrlList.offer(link);
                     });
                 }
             } catch (Exception e) {
@@ -162,7 +160,7 @@ public class SinaProducer implements ProducerSpider {
             if (end != -1) {
                 String link = content.substring(start + 6, end).trim();
                 if ((link.startsWith("http://news.sina.com.cn") || link.startsWith("https://news.sina.com.cn"))
-                        && !isOldNewsLink(link)) {  //过滤掉年代久远的新闻，避免因为这些链接导致宽度遍历太发散
+                        && !visitedUrlSet.contains(link) && !isOldNewsLink(link)) {  //过滤掉年代久远的新闻，避免因为这些链接导致宽度遍历太发散
                     links.add(link.trim());
                 }
             }

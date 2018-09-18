@@ -25,12 +25,12 @@
 
     <!--分页查询-->
     <select id="findByPage" resultMap="NewsResult">
-        SELECT * FROM t_news WHERE catch_time=#{2} LIMIT #{0},#{1}
+        SELECT * FROM t_news WHERE `time`=#{2} LIMIT #{0},#{1}
     </select>
 
     <!--查询新闻条数-->
     <select id="queryNum" resultType="Integer" parameterType="String">
-        SELECT COUNT(*) FROM t_news WHERE time=#{_param}
+        SELECT COUNT(*) FROM t_news WHERE `time`=#{_param}
     </select>
 
     <insert id="insert" parameterType="News">

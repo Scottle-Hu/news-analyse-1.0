@@ -159,8 +159,9 @@ public class SinaProducer implements ProducerSpider {
         while (start != -1) {
             int end = content.indexOf("\"", start + 6);
             if (end != -1) {
-                String link = content.substring(start + 6, end);
-                if (link.contains("http") && link.contains("//news.sina.com.cn")) {  //是新浪站内链接
+                String link = content.substring(start + 6, end).trim();
+                if (link.startsWith("http://news.sina.com.cn")
+                        || link.startsWith("https://news.sina.com.cn")) {
                     links.add(link.trim());
                 }
             }

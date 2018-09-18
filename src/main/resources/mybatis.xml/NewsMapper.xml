@@ -30,7 +30,7 @@
 
     <!--查询新闻条数-->
     <select id="queryNum" resultType="Integer" parameterType="String">
-        SELECT COUNT(*) FROM t_news WHERE catch_time=#{_param}
+        SELECT COUNT(*) FROM t_news WHERE time=#{_param}
     </select>
 
     <insert id="insert" parameterType="News">

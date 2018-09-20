@@ -28,6 +28,9 @@ public class PushedArticleNumZK {
     @Value("${zookeeper.spider.completed}")
     private String zkCompletedArticleNumPath;
 
+    @Value("${zookeeper.url}")
+    private String zkConnectString;
+
     @Value("${zookeeper.timeout}")
     private int timeout;
 
@@ -86,23 +89,18 @@ public class PushedArticleNumZK {
      */
     private void initPushedArticleNum() {
         try {
-            zk = new ZooKeeper(zkCompletedArticleNumPath, timeout, articleNumWatcher);
-        } catch (IOException e) {
-            log.error("error when create zk.", e);
-            return;
-        }
-        try {
-            //初始化置消费数量为0
+            zk = new ZooKeeper(zkConnectString, timeout, articleNumWatcher);
             if (zk.exists(zkCompletedArticleNumPath, false) == null) {
                 zk.create(zkCompletedArticleNumPath, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             }
+            //初始化置消费数量为0
             int version = zk.exists(zkCompletedArticleNumPath, false).getVersion();
             zk.setData(zkCompletedArticleNumPath, "0".getBytes(), version);
             //设置监听
             zk.getData(zkCompletedArticleNumPath, articleNumWatcher, null);
             pushArticleNum = 0;
         } catch (Exception e) {
-            log.error("error when set zk listener.", e);
+            log.error("error when init zk.", e);
             return;
         }
         log.info("init pushedArticleNumZk successfully.");

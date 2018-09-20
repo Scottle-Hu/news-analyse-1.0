@@ -3,6 +3,7 @@ package com.charles.na.spider.consumer.impl;
 import com.charles.na.mapper.NewsMapper;
 import com.charles.na.model.News;
 import com.charles.na.spider.consumer.ConsumerSpider;
+import com.charles.na.spider.service.PushedArticleNumZK;
 import com.charles.na.utils.HttpUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Logger;
@@ -29,6 +30,12 @@ public class SinaConsumer extends ConsumerSpider {
     private NewsMapper newsMapper;
 
     /**
+     * 用zk同步已经消费的数量
+     */
+    @Autowired
+    private PushedArticleNumZK pushedArticleNumZk;
+
+    /**
      * 抓取网页内容并解析
      *
      * @param b
@@ -46,6 +53,7 @@ public class SinaConsumer extends ConsumerSpider {
             }
             //插入新闻
             newsMapper.insert(news);
+            pushedArticleNumZk.add();
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("error when consume url.", e);
         }

@@ -2,9 +2,11 @@ package com.charles.na.spider.producer.impl;
 
 import com.charles.na.spider.ds.PriorityQueue;
 import com.charles.na.spider.producer.ProducerSpider;
+import com.charles.na.spider.service.PushedArticleNumZK;
 import com.charles.na.utils.HttpUtil;
 import lombok.extern.log4j.Log4j;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -32,6 +34,13 @@ public class SinaProducer implements ProducerSpider {
      * 待抓取链接，使用优先队列
      */
     private Queue<String> toVisitUrlList = new LinkedList<>();
+
+    /**
+     * 已经成功消费的文章数量，注意：不能是生产的链接数量，
+     * 因为有些链接是无效的，导致实际消费文章比这个数字少
+     */
+    @Autowired
+    private PushedArticleNumZK pushedArticleNumZk;
 
     /**
      * 限制待抓取队列的最大长度
@@ -72,9 +81,8 @@ public class SinaProducer implements ProducerSpider {
      */
     @Override
     public void produce(PriorityQueue queue) {
-        int pushArticleNum = 0;  //已经推送到zk的最终新闻页面个数
         toVisitUrlList.offer(rootUrl);
-        while (pushArticleNum < MAX_ARTICLE_NUM_ONCE && !toVisitUrlList.isEmpty()) {
+        while (pushedArticleNumZk.get() < MAX_ARTICLE_NUM_ONCE && !toVisitUrlList.isEmpty()) {
             String url = toVisitUrlList.poll();
             try {
                 if (visitedUrlSet.contains(url)) {
@@ -83,7 +91,6 @@ public class SinaProducer implements ProducerSpider {
                 visitedUrlSet.add(url);
                 if (isFinalNewsPage(url)) {
                     queue.produce(url.getBytes(), 1);  //将最终页面的url推送给消费者
-                    pushArticleNum++;
                 }
                 List<String> links = extractSinaUrl(url);
                 if (!CollectionUtils.isEmpty(links) && toVisitUrlList.size() < MAX_URL_LIST_SIZE) {

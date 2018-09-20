@@ -21,8 +21,7 @@
 
     <!--配置文件-->
     <context:property-placeholder
-            location="classpath:jdbc.properties,classpath:mongo.properties,classpath:redis.properties,
-            classpath:zookeeper.properties,classpath:elitist.properties"/>
+            location="classpath:jdbc.properties,classpath:redis.properties,classpath:elitist.properties"/>
 
     <!-- 配置mybatis的sqlSessionFactory -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

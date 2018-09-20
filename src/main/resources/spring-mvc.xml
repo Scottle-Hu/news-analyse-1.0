@@ -16,7 +16,6 @@
     </bean>
 
     <context:property-placeholder
-            location="classpath:zookeeper.properties,classpath:mongo.properties,
-            classpath:redis.properties,classpath:elitist.properties,classpath:jdbc.properties"/>
+            location="classpath:redis.properties,classpath:elitist.properties,classpath:jdbc.properties"/>
 
 </beans>  

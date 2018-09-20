@@ -1,9 +1,7 @@
 package com.charles.na.spider.service;
 
 import lombok.extern.log4j.Log4j;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -95,8 +93,11 @@ public class PushedArticleNumZK {
         }
         try {
             //初始化置消费数量为0
-            zk.setData(zkCompletedArticleNumPath, "0".getBytes(),
-                    zk.exists(zkCompletedArticleNumPath, false).getVersion());
+            if (zk.exists(zkCompletedArticleNumPath, false) == null) {
+                zk.create(zkCompletedArticleNumPath, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            }
+            int version = zk.exists(zkCompletedArticleNumPath, false).getVersion();
+            zk.setData(zkCompletedArticleNumPath, "0".getBytes(), version);
             //设置监听
             zk.getData(zkCompletedArticleNumPath, articleNumWatcher, null);
             pushArticleNum = 0;

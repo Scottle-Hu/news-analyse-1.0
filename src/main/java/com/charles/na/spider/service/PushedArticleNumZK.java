@@ -77,6 +77,7 @@ public class PushedArticleNumZK {
                 try {
                     pushArticleNum = Integer.parseInt(
                             new String(zk.getData(zkCompletedArticleNumPath, articleNumWatcher, null)));
+                    log.info("update pushArticleNum to " + pushArticleNum);
                 } catch (Exception e) {
                     log.error("error when update pushArticleNum.", e);
                 }

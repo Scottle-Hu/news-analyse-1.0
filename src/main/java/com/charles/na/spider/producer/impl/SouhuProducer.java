@@ -132,6 +132,11 @@ public class SouhuProducer implements ProducerSpider {
             int end = content.indexOf("\"", start + 6);
             if (end != -1) {
                 String link = content.substring(start + 6, end).trim();
+                //去除参数
+                int pIndex = link.indexOf("?");
+                if (pIndex != -1) {
+                    link = link.substring(0, pIndex);
+                }
                 if ((link.contains("http") && link.contains("sohu.com"))
                         && !visitedUrlSet.contains(link)) {
                     links.add(link.trim());

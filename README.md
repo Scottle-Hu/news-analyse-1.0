@@ -5,11 +5,11 @@ version 1.0 of news analyse system, version 2.0 will be a distributed system
   - catch news data from web periodlly
   - cluster analyse
   - topic extract and track
-  - visulize impression
+  - visualize impression
   
 - design
-  - data collection subsystem
-  - preproccessing subsystem
+  - data collection subsystem(spider)
+  - pre-processing subsystem
   - cluster and topic subsystem
   - impression web subsystem
   - configuration subsystem

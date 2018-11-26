@@ -59,6 +59,8 @@ public class SinaProducer implements ProducerSpider {
      */
     private String exactDate;
 
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     @PostConstruct
     public void init() {
         log.info("init set MAX_ARTICLE_NUM_ONCE = " + MAX_ARTICLE_NUM_ONCE);
@@ -67,7 +69,7 @@ public class SinaProducer implements ProducerSpider {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                log.info("toVisitUrlList length: " + toVisitUrlList.size()
+                log.info("[sina] toVisitUrlList length: " + toVisitUrlList.size()
                         + ", visitedUrlSet length: " + visitedUrlSet.size());
             }
         }, 0, 60000);
@@ -99,12 +101,12 @@ public class SinaProducer implements ProducerSpider {
                     });
                 }
             } catch (Exception e) {
-                log.error("error when produce url from: " + url, e);
+                log.error("[sina] error when produce url from: " + url, e);
             }
         }
         //队列空了导致没有新闻继续抓取，打个warning
         if (toVisitUrlList.isEmpty()) {
-            log.warn("toVisitUrlList is empty! Producing stopped!");
+            log.warn("[sina] toVisitUrlList is empty! Producing stopped!");
         }
     }
 
@@ -118,8 +120,7 @@ public class SinaProducer implements ProducerSpider {
      */
     private boolean isFinalNewsPage(String url) {
         //注意：默认只要今天的新闻(可以设置“今天”的时间)
-        String date = StringUtils.isEmpty(exactDate) ?
-                new SimpleDateFormat("yyyy-MM-dd").format(new Date()) : exactDate;
+        String date = StringUtils.isEmpty(exactDate) ? dateFormat.format(new Date()) : exactDate;
         if (!url.contains(date)) {
             return false;
         }
@@ -156,7 +157,7 @@ public class SinaProducer implements ProducerSpider {
      * @return
      */
     private List<String> extractSinaUrl(String url) {
-        String content = HttpUtil.getRequest(url);
+        String content = HttpUtil.getRequest(url, "iso-8859-1");
         if (StringUtils.isEmpty(content)) {
             return Collections.emptyList();
         }
@@ -218,8 +219,7 @@ public class SinaProducer implements ProducerSpider {
         if (!isNewsPage) {
             return false;
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String date = StringUtils.isEmpty(exactDate) ? sdf.format(new Date()) : exactDate;
+        String date = StringUtils.isEmpty(exactDate) ? dateFormat.format(new Date()) : exactDate;
         DateTime shouldDate = new DateTime(date), actualDate = new DateTime(thisDate);
         if (actualDate.isBefore(shouldDate)) {
             return true;

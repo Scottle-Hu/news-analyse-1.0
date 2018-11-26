@@ -12,14 +12,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath:applicationContext.xml"})
-public class SinaSpiderPlanTest {
+public class NeteaseSpiderPlanTest {
 
     @Autowired
-    private SpiderPlan sinaPlan;
+    private SpiderPlan neteasePlan;
 
     @Test
     public void testCollect() {
-        sinaPlan.beginSpider();
+        neteasePlan.beginSpider();
     }
 
 }

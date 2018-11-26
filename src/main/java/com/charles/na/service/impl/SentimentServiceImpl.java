@@ -47,7 +47,7 @@ public class SentimentServiceImpl implements ISentimentService {
     public String parseSentiment(String text) {
         Map<String, String> map = new HashMap<String, String>();
         map.put(PARAM, text);
-        String result = HttpUtil.postRequest(url, map);
+        String result = HttpUtil.postRequest(url, map, null);
         if (StringUtils.isBlank(result)) {
             return defaultJson;
         }

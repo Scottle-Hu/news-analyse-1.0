@@ -13,6 +13,8 @@ import java.util.List;
  */
 public abstract class SpiderPlan extends Thread {
 
+    protected String planName;
+
     /**
      * 当有多个线程的时候，用于线程通知的对象
      */
@@ -59,4 +61,8 @@ public abstract class SpiderPlan extends Thread {
     }
 
     public abstract void setDate(String date);
+
+    public abstract void setPlanName(String planName);
+
+    public abstract String getPlanName();
 }

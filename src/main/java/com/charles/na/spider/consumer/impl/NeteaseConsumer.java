@@ -6,25 +6,23 @@ import com.charles.na.spider.consumer.ConsumerSpider;
 import com.charles.na.spider.service.PushedArticleNumZK;
 import com.charles.na.utils.HttpUtil;
 import lombok.extern.log4j.Log4j;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * 实现新浪页面的抓取和解析
+ * 网易新闻的爬虫消费者
  *
- * @author Charles
+ * @author huqj
  */
+@Service("neteaseConsumer")
 @Log4j
-@Service("sinaConsumer")
-public class SinaConsumer extends ConsumerSpider {
-
-    private Logger LOGGER = Logger.getLogger(SinaConsumer.class);
+public class NeteaseConsumer extends ConsumerSpider {
 
     @Autowired
     private NewsMapper newsMapper;
@@ -35,19 +33,18 @@ public class SinaConsumer extends ConsumerSpider {
     @Autowired
     private PushedArticleNumZK pushedArticleNumZk;
 
-    String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(new Date());//默认
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    /**
-     * 抓取网页内容并解析
-     *
-     * @param b
-     */
+    SimpleDateFormat publishTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    String dateStr = dateFormat.format(new Date());//爬虫解析不出日期时的默认日期
+
     @Override
-    public void accept(byte[] b) {
+    public void accept(byte[] bytes) {
         try {
             //从消费者获取的byte流构造字符串
-            String link = new String(b, "utf-8");
-            LOGGER.info("[sina] start build news from " + link);
+            String link = new String(bytes, "utf-8");
+            log.info("[netease] start build news from " + link);
             //构造新闻
             News news = buildNewsFromUrl(link);
             System.out.println("===============================================\n" + news + "\n");
@@ -58,18 +55,18 @@ public class SinaConsumer extends ConsumerSpider {
             newsMapper.insert(news);
             pushedArticleNumZk.add();
         } catch (UnsupportedEncodingException e) {
-            LOGGER.error("[sina] error when consume url.", e);
+            log.error("[netease] error when consume url.", e);
         }
     }
 
     /**
-     * 从url分析页面，构造新闻对象
+     * 从网易新闻url分析页面，构造新闻对象
      *
      * @param url
      * @return
      */
     private News buildNewsFromUrl(String url) {
-        String content = HttpUtil.getRequest(url, "iso-8859-1");
+        String content = HttpUtil.getRequest(url, null);
         if (StringUtils.isEmpty(content)) {
             return null;
         }
@@ -80,7 +77,7 @@ public class SinaConsumer extends ConsumerSpider {
             news.setId(url.substring(url.lastIndexOf("/") + 1, url.length()));
 
             ///////////////////////// set title ////////////////////////
-            int titleStart = content.indexOf("class=\"main-title\">");
+            int titleStart = content.indexOf("<h1>");
             if (titleStart == -1) {
                 news.setTitle("");  //标题缺失
             } else {
@@ -88,31 +85,31 @@ public class SinaConsumer extends ConsumerSpider {
                 if (titleEnd == -1) {
                     news.setTitle("");
                 } else {
-                    news.setTitle(content.substring(titleStart + 19, titleEnd));
+                    news.setTitle(content.substring(titleStart + 4, titleEnd));
                 }
             }
 
             /////////////////////// set time //////////////////////////
-            int timeStart = content.indexOf("class=\"date\">");
+            int timeStart = content.indexOf("class=\"post_time_source\">");
             if (timeStart == -1) {
                 news.setTitle(dateStr);
             } else {
-                int timeEnd = content.indexOf("</span>", timeStart);
+                int timeEnd = content.indexOf("来源", timeStart);
                 if (timeEnd == -1) {
                     news.setTime(dateStr);
                 } else {
-                    String timeWholeStr = content.substring(timeStart + 13, timeEnd);
-                    if (timeWholeStr.contains("日")) {
-                        timeWholeStr = timeWholeStr.substring(0, timeWholeStr.indexOf("日"));
+                    String timeWholeStr = content.substring(timeStart + 25, timeEnd).trim();
+                    try {
+                        news.setTime(dateFormat.format(publishTimeFormat.parse(timeWholeStr)));
+                    } catch (ParseException e) {
+                        log.error("[netease] error parse publish time.", e);
+                        news.setTime(dateStr);
                     }
-                    timeWholeStr = timeWholeStr.replace("年", "-")
-                            .replace("月", "-");
-                    news.setTime(timeWholeStr);
                 }
             }
 
             //////////////////// set source ///////////////////////
-            int sourceStart = content.indexOf("class=\"source\"");
+            int sourceStart = content.indexOf("id=\"ne_article_source\"");
             if (sourceStart == -1) {
                 news.setSource("来源缺失");
             } else {
@@ -124,14 +121,14 @@ public class SinaConsumer extends ConsumerSpider {
                     if (sourceEnd == -1) {
                         news.setSource("来源缺失");
                     } else {
-                        news.setSource(content.substring(sourceStart + 1, sourceEnd));
+                        news.setSource(content.substring(sourceStart + 1, sourceEnd).trim());
                     }
                 }
             }
 
             //////////////////// set  content ////////////////////
             //考虑到内容比较重要，若无法解析出正文则直接返回null
-            int articleStart = content.indexOf("class=\"article\"");
+            int articleStart = content.indexOf("id=\"endText\"");
             if (articleStart == -1) {
                 return null;
             } else {
@@ -139,7 +136,7 @@ public class SinaConsumer extends ConsumerSpider {
                 if (articleStart == -1) {
                     return null;
                 } else {
-                    int articleEnd = content.indexOf("<p class=\"show_author\">", articleStart);
+                    int articleEnd = content.indexOf("<div class=\"ep-source", articleStart);
                     if (articleEnd == -1) {
                         return null;
                     } else {
@@ -153,23 +150,7 @@ public class SinaConsumer extends ConsumerSpider {
             }
 
             //////////////////// set keywords ////////////////////
-            int keywordStart = content.indexOf("class=\"keywords\"");
-            if (keywordStart == -1) {
-                news.setKeywords("");
-            } else {
-                keywordStart = content.indexOf("data-wbkey=\"");
-                if (keywordStart == -1) {
-                    news.setKeywords("");
-                } else {
-                    keywordStart += 12;
-                    int keywordEnd = content.indexOf("\"", keywordStart);
-                    if (keywordEnd == -1) {
-                        news.setKeywords("");
-                    } else {
-                        news.setKeywords(content.substring(keywordStart, keywordEnd));
-                    }
-                }
-            }
+            news.setKeywords("");  //网易新闻没有关键词
 
             /////////////////// set visitNum ///////////////////
             //TODO 暂时先设置为0
@@ -181,7 +162,7 @@ public class SinaConsumer extends ConsumerSpider {
 
             return news;
         } catch (Exception e) {
-            LOGGER.error("error when build news from html src.", e);
+            log.error("[netease] error when build news from html src.", e);
         }
         return null;
     }

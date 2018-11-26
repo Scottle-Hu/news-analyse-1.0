@@ -1,7 +1,6 @@
 package com.charles.na;
 
 import com.charles.na.service.IMainService;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**

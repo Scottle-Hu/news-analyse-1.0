@@ -46,7 +46,7 @@ public class PersonServiceImpl implements IPersonService {
         }
         //再调百科
         String finalUrl = url + people;
-        String page = HttpUtil.getRequest(finalUrl);
+        String page = HttpUtil.getRequest(finalUrl, null);
         if (StringUtils.isEmpty(page)) {
             LOGGER.info("页面内容为空:" + finalUrl);
             return false;

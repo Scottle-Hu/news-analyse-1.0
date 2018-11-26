@@ -34,7 +34,7 @@ public class HttpUtil {
      * @param param
      * @return
      */
-    public static String postRequest(String url, Map<String, String> param) {
+    public static String postRequest(String url, Map<String, String> param, String encoding) {
         HttpClient client = new DefaultHttpClient();
         //构造一级请求的url
         HttpPost post = new HttpPost(url);
@@ -71,14 +71,16 @@ public class HttpUtil {
         //关闭资源
         client.getConnectionManager().shutdown();
         try {  //通过请求头没法解决乱码问
-            return new String(content.getBytes("iso-8859-1"), "utf-8");
+            if (encoding != null)
+                return new String(content.getBytes(encoding), "utf-8");
+            return content;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static String getRequest(String url) {
+    public static String getRequest(String url, String encoding) {
         HttpClient client = new DefaultHttpClient();
         try {
             //构造一级请求的url
@@ -89,7 +91,9 @@ public class HttpUtil {
             HttpResponse response = client.execute(get);
             HttpEntity entity = response.getEntity();
             String content = EntityUtils.toString(entity);
-            return new String(content.getBytes("iso-8859-1"), "utf-8");
+            if (encoding != null)
+                return new String(content.getBytes(encoding), "utf-8");
+            return content;
         } catch (Exception e) {
             LOGGER.error("error when send GET request to get response. url=" + url, e);
         } finally {

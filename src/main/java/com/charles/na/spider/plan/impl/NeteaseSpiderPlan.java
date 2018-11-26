@@ -16,15 +16,15 @@ import javax.annotation.Resource;
  *
  * @author Charles
  */
-@Order(1)
-@Service("sinaPlan")
-public class SinaSpiderPlan extends SpiderPlan {
+@Order(2)
+@Service("neteasePlan")
+public class NeteaseSpiderPlan extends SpiderPlan {
 
     @Resource
-    private ProducerSpider sinaProducer;
+    private ProducerSpider neteaseProducer;
 
     @Resource
-    private ConsumerSpider sinaConsumer;
+    private ConsumerSpider neteaseConsumer;
 
     @Value("${zookeeper.url}")
     private String zkUrl;
@@ -40,8 +40,8 @@ public class SinaSpiderPlan extends SpiderPlan {
     @PostConstruct
     public void initQueue() {
         //初始化zk消费队列
-        queue = new PriorityQueue(zkUrl, timeout, znode + "/sina");
-        setPlanName("SinaPlan");
+        queue = new PriorityQueue(zkUrl, timeout, znode + "/netease");
+        setPlanName("NetEasePlan");
     }
 
     @Override
@@ -49,16 +49,16 @@ public class SinaSpiderPlan extends SpiderPlan {
         /*
         注册爬虫消费者
          */
-        queue.consume(sinaConsumer);
+        queue.consume(neteaseConsumer);
         /*
         开启生产者生产数据
          */
-        sinaProducer.produce(queue);
+        neteaseProducer.produce(queue);
     }
 
     @Override
     public void setDate(String date) {
-        this.sinaProducer.setDate(date);
+        this.neteaseProducer.setDate(date);
     }
 
     @Override
@@ -70,4 +70,5 @@ public class SinaSpiderPlan extends SpiderPlan {
     public String getPlanName() {
         return planName;
     }
+
 }

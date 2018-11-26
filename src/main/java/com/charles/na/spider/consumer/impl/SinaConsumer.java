@@ -77,7 +77,7 @@ public class SinaConsumer extends ConsumerSpider {
             News news = new News();
             news.setUrl(url);
             //用url后半段做id保证不重复
-            news.setId(url.substring(url.lastIndexOf("/") + 1, url.length()));
+            news.setId("sina_" + url.substring(url.lastIndexOf("/") + 1, url.length()));
 
             ///////////////////////// set title ////////////////////////
             int titleStart = content.indexOf("class=\"main-title\">");

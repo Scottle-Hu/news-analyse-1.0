@@ -16,13 +16,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * 网易新闻的爬虫消费者
+ * 搜狐新闻的爬虫消费者
  *
  * @author huqj
  */
-@Service("neteaseConsumer")
+@Service("souhuConsumer")
 @Log4j
-public class NeteaseConsumer extends ConsumerSpider {
+public class SouhuConsumer extends ConsumerSpider {
 
     @Autowired
     private NewsMapper newsMapper;
@@ -35,7 +35,7 @@ public class NeteaseConsumer extends ConsumerSpider {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    SimpleDateFormat publishTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat publishTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     String dateStr = dateFormat.format(new Date());//爬虫解析不出日期时的默认日期
 
@@ -44,7 +44,7 @@ public class NeteaseConsumer extends ConsumerSpider {
         try {
             //从消费者获取的byte流构造字符串
             String link = new String(bytes, "utf-8");
-            log.info("[netease] start build news from " + link);
+            log.info("[souhu] start build news from " + link);
             //构造新闻
             News news = buildNewsFromUrl(link);
             System.out.println("===============================================\n" + news + "\n");
@@ -55,7 +55,7 @@ public class NeteaseConsumer extends ConsumerSpider {
             newsMapper.insert(news);
             pushedArticleNumZk.add();
         } catch (UnsupportedEncodingException e) {
-            log.error("[netease] error when consume url.", e);
+            log.error("[souhu] error when consume url.", e);
         }
     }
 
@@ -74,14 +74,14 @@ public class NeteaseConsumer extends ConsumerSpider {
             News news = new News();
             news.setUrl(url);
             //用url后半段做id保证不重复
-            news.setId("netease_" + url.substring(url.lastIndexOf("/") + 1, url.length()));
+            news.setId("souhu_" + url.substring(url.lastIndexOf("/") + 1, url.length()));
 
             ///////////////////////// set title ////////////////////////
             int titleStart = content.indexOf("<h1>");
             if (titleStart == -1) {
                 news.setTitle("");  //标题缺失
             } else {
-                int titleEnd = content.indexOf("</h1>", titleStart);
+                int titleEnd = content.indexOf("<span class=\"article-tag\">", titleStart);
                 if (titleEnd == -1) {
                     news.setTitle("");
                 } else {
@@ -90,30 +90,35 @@ public class NeteaseConsumer extends ConsumerSpider {
             }
 
             /////////////////////// set time //////////////////////////
-            int timeStart = content.indexOf("class=\"post_time_source\">");
+            int timeStart = content.indexOf("id=\"news-time\"");
             if (timeStart == -1) {
                 news.setTitle(dateStr);
             } else {
-                int timeEnd = content.indexOf("来源", timeStart);
-                if (timeEnd == -1) {
-                    news.setTime(dateStr);
+                timeStart = content.indexOf(">", timeStart);
+                if (timeStart == -1) {
+                    news.setTitle(dateStr);
                 } else {
-                    String timeWholeStr = content.substring(timeStart + 25, timeEnd).trim();
-                    try {
-                        news.setTime(dateFormat.format(publishTimeFormat.parse(timeWholeStr)));
-                    } catch (ParseException e) {
-                        log.error("[netease] error parse publish time.", e);
+                    int timeEnd = content.indexOf("</", timeStart);
+                    if (timeEnd == -1) {
                         news.setTime(dateStr);
+                    } else {
+                        String timeWholeStr = content.substring(timeStart + 1, timeEnd).trim();
+                        try {
+                            news.setTime(dateFormat.format(publishTimeFormat.parse(timeWholeStr)));
+                        } catch (ParseException e) {
+                            log.error("[souhu] error parse publish time.", e);
+                            news.setTime(dateStr);
+                        }
                     }
                 }
             }
 
             //////////////////// set source ///////////////////////
-            int sourceStart = content.indexOf("id=\"ne_article_source\"");
+            int sourceStart = content.indexOf("data-role=\"original-link\">");
             if (sourceStart == -1) {
                 news.setSource("来源缺失");
             } else {
-                sourceStart = content.indexOf(">", sourceStart);
+                sourceStart = content.indexOf(">", sourceStart + 26);
                 if (sourceStart == -1) {
                     news.setSource("来源缺失");
                 } else {
@@ -128,29 +133,34 @@ public class NeteaseConsumer extends ConsumerSpider {
 
             //////////////////// set  content ////////////////////
             //考虑到内容比较重要，若无法解析出正文则直接返回null
-            int articleStart = content.indexOf("id=\"endText\"");
+            int articleStart = content.indexOf("id=\"mp-editor\">");
             if (articleStart == -1) {
                 return null;
             } else {
-                articleStart = content.indexOf(">", articleStart);
-                if (articleStart == -1) {
+                int articleEnd = content.indexOf("<i class=\"backsohu\"", articleStart);
+                if (articleEnd == -1) {
                     return null;
                 } else {
-                    int articleEnd = content.indexOf("<div class=\"ep-source", articleStart);
-                    if (articleEnd == -1) {
+                    String con = cleanHTMLTag(content.substring(articleStart + 15, articleEnd));
+                    if (con == null) {
                         return null;
-                    } else {
-                        String con = cleanHTMLTag(content.substring(articleStart + 1, articleEnd));
-                        if (con == null) {
-                            return null;
-                        }
-                        news.setContent(con);
                     }
+                    news.setContent(con);
                 }
             }
 
             //////////////////// set keywords ////////////////////
-            news.setKeywords("");  //网易新闻没有关键词
+            int keywordStart = url.indexOf("class=\"article-tag\">");
+            if (keywordStart == -1) {
+                news.setKeywords("");
+            } else {
+                int keywordEnd = url.indexOf("</span>", keywordStart);
+                if (keywordEnd == -1) {
+                    news.setKeywords("");
+                } else {
+                    news.setKeywords(url.substring(keywordStart + 20, keywordEnd).trim().replace("\n", ""));
+                }
+            }
 
             /////////////////// set visitNum ///////////////////
             //TODO 暂时先设置为0
@@ -162,7 +172,7 @@ public class NeteaseConsumer extends ConsumerSpider {
 
             return news;
         } catch (Exception e) {
-            log.error("[netease] error when build news from html src.", e);
+            log.error("[souhu] error when build news from html src.", e);
         }
         return null;
     }

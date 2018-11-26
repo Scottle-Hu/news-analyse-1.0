@@ -12,19 +12,19 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 /**
- * 抓取网易新闻的爬虫计划
+ * 抓取搜狐新闻的爬虫计划
  *
  * @author Charles
  */
-@Order(2)
-@Service("neteasePlan")
-public class NeteaseSpiderPlan extends SpiderPlan {
+@Order(3)
+@Service("souhuPlan")
+public class SouhuSpiderPlan extends SpiderPlan {
 
     @Resource
-    private ProducerSpider neteaseProducer;
+    private ProducerSpider souhuProducer;
 
     @Resource
-    private ConsumerSpider neteaseConsumer;
+    private ConsumerSpider souhuConsumer;
 
     @Value("${zookeeper.url}")
     private String zkUrl;
@@ -40,8 +40,8 @@ public class NeteaseSpiderPlan extends SpiderPlan {
     @PostConstruct
     public void initQueue() {
         //初始化zk消费队列
-        queue = new PriorityQueue(zkUrl, timeout, znode + "/netease");
-        setPlanName("NetEasePlan");
+        queue = new PriorityQueue(zkUrl, timeout, znode + "/souhu");
+        setPlanName("SouHuPlan");
     }
 
     @Override
@@ -49,16 +49,16 @@ public class NeteaseSpiderPlan extends SpiderPlan {
         /*
         注册爬虫消费者
          */
-        queue.consume(neteaseConsumer);
+        queue.consume(souhuConsumer);
         /*
         开启生产者生产数据
          */
-        neteaseProducer.produce(queue);
+        souhuProducer.produce(queue);
     }
 
     @Override
     public void setDate(String date) {
-        this.neteaseProducer.setDate(date);
+        this.souhuProducer.setDate(date);
     }
 
     @Override

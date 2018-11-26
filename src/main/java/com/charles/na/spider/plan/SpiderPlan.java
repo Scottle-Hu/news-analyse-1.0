@@ -65,4 +65,11 @@ public abstract class SpiderPlan extends Thread {
     public abstract void setPlanName(String planName);
 
     public abstract String getPlanName();
+
+    @Override
+    public String toString() {
+        return "SpiderPlan{" +
+                "planName='" + planName + '\'' +
+                '}';
+    }
 }

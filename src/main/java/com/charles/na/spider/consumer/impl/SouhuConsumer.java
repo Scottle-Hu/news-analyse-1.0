@@ -72,6 +72,35 @@ public class SouhuConsumer extends ConsumerSpider {
         }
         try {
             News news = new News();
+            /////////////////////// set time //////////////////////////
+            //同时检查时间
+            int timeStart = content.indexOf("id=\"news-time\"");
+            if (timeStart == -1) {
+                news.setTitle(dateStr);
+            } else {
+                timeStart = content.indexOf(">", timeStart);
+                if (timeStart == -1) {
+                    news.setTitle(dateStr);
+                } else {
+                    int timeEnd = content.indexOf("</", timeStart);
+                    if (timeEnd == -1) {
+                        news.setTime(dateStr);
+                    } else {
+                        String timeWholeStr = content.substring(timeStart + 1, timeEnd).trim();
+                        try {
+                            String newsDate = dateFormat.format(publishTimeFormat.parse(timeWholeStr));
+                            if (dateStr.equals(newsDate)) {
+                                news.setTime(newsDate);
+                            } else {
+                                return null;
+                            }
+                        } catch (ParseException e) {
+                            log.error("[souhu] error parse publish time.", e);
+                            news.setTime(dateStr);
+                        }
+                    }
+                }
+            }
             news.setUrl(url);
             //用url后半段做id保证不重复
             news.setId("souhu_" + url.substring(url.lastIndexOf("/") + 1, url.length()));
@@ -89,29 +118,6 @@ public class SouhuConsumer extends ConsumerSpider {
                 }
             }
 
-            /////////////////////// set time //////////////////////////
-            int timeStart = content.indexOf("id=\"news-time\"");
-            if (timeStart == -1) {
-                news.setTitle(dateStr);
-            } else {
-                timeStart = content.indexOf(">", timeStart);
-                if (timeStart == -1) {
-                    news.setTitle(dateStr);
-                } else {
-                    int timeEnd = content.indexOf("</", timeStart);
-                    if (timeEnd == -1) {
-                        news.setTime(dateStr);
-                    } else {
-                        String timeWholeStr = content.substring(timeStart + 1, timeEnd).trim();
-                        try {
-                            news.setTime(dateFormat.format(publishTimeFormat.parse(timeWholeStr)));
-                        } catch (ParseException e) {
-                            log.error("[souhu] error parse publish time.", e);
-                            news.setTime(dateStr);
-                        }
-                    }
-                }
-            }
 
             //////////////////// set source ///////////////////////
             int sourceStart = content.indexOf("data-role=\"original-link\">");

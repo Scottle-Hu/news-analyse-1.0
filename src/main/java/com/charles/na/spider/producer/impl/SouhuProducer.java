@@ -132,7 +132,7 @@ public class SouhuProducer implements ProducerSpider {
             int end = content.indexOf("\"", start + 6);
             if (end != -1) {
                 String link = content.substring(start + 6, end).trim();
-                if ((link.startsWith("http://www.sohu.com") || link.startsWith("https://www.sohu.com"))
+                if ((link.contains("http") && link.contains("sohu.com"))
                         && !visitedUrlSet.contains(link)) {
                     links.add(link.trim());
                 }

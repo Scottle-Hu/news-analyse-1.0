@@ -92,7 +92,7 @@ public class IFengConsumer extends ConsumerSpider {
             /////////////////////// set time //////////////////////////
             int timeStart = content.indexOf("class=\"ss01\">");
             if (timeStart == -1) {
-                news.setTitle(dateStr);
+                news.setTime(dateStr);
             } else {
                 int timeEnd = content.indexOf("</span>", timeStart);
                 if (timeEnd == -1) {

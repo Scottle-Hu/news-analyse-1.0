@@ -82,7 +82,7 @@ public class SinaConsumer extends ConsumerSpider {
             ///////////////////////// set title ////////////////////////
             int titleStart = content.indexOf("class=\"main-title\">");
             if (titleStart == -1) {
-                news.setTitle("");  //标题缺失
+                news.setTime("");  //标题缺失
             } else {
                 int titleEnd = content.indexOf("</h1>", titleStart);
                 if (titleEnd == -1) {

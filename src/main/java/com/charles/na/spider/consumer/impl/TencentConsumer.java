@@ -16,13 +16,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * 网易新闻的爬虫消费者
+ * 腾讯新闻的爬虫消费者
  *
  * @author huqj
  */
-@Service("neteaseConsumer")
+@Service("tencentConsumer")
 @Log4j
-public class NeteaseConsumer extends ConsumerSpider {
+public class TencentConsumer extends ConsumerSpider {
 
     @Autowired
     private NewsMapper newsMapper;
@@ -44,7 +44,7 @@ public class NeteaseConsumer extends ConsumerSpider {
         try {
             //从消费者获取的byte流构造字符串
             String link = new String(bytes, "utf-8");
-            log.info("[netease] start build news from " + link);
+            log.info("[tencent] start build news from " + link);
             //构造新闻
             News news = buildNewsFromUrl(link);
             System.out.println("===============================================\n" + news + "\n");
@@ -55,12 +55,12 @@ public class NeteaseConsumer extends ConsumerSpider {
             newsMapper.insert(news);
             pushedArticleNumZk.add();
         } catch (UnsupportedEncodingException e) {
-            log.error("[netease] error when consume url.", e);
+            log.error("[tencent] error when consume url.", e);
         }
     }
 
     /**
-     * 从网易新闻url分析页面，构造新闻对象
+     * 从腾讯新闻url分析页面，构造新闻对象
      *
      * @param url
      * @return
@@ -74,7 +74,7 @@ public class NeteaseConsumer extends ConsumerSpider {
             News news = new News();
             news.setUrl(url);
             //用url后半段做id保证不重复
-            news.setId("netease_" + url.substring(url.lastIndexOf("/") + 1, url.length()));
+            news.setId("ifeng_" + url.substring(url.lastIndexOf("/") + 1, url.length()));
 
             ///////////////////////// set title ////////////////////////
             int titleStart = content.indexOf("<h1>");
@@ -90,67 +90,75 @@ public class NeteaseConsumer extends ConsumerSpider {
             }
 
             /////////////////////// set time //////////////////////////
-            int timeStart = content.indexOf("class=\"post_time_source\">");
+            int timeStart = content.indexOf("name=\"apub:time\"");
             if (timeStart == -1) {
                 news.setTime(dateStr);
             } else {
-                int timeEnd = content.indexOf("来源", timeStart);
-                if (timeEnd == -1) {
+                timeStart = content.indexOf("content=\"", timeStart);
+                if (timeStart == -1) {
                     news.setTime(dateStr);
                 } else {
-                    String timeWholeStr = content.substring(timeStart + 25, timeEnd).trim();
-                    try {
-                        news.setTime(dateFormat.format(publishTimeFormat.parse(timeWholeStr)));
-                    } catch (ParseException e) {
-                        log.error("[netease] error parse publish time.", e);
+                    int timeEnd = content.indexOf("\"", timeStart + 9);
+                    if (timeEnd == -1) {
                         news.setTime(dateStr);
+                    } else {
+                        String timeWholeStr = content.substring(timeStart + 9, timeEnd).trim();
+                        try {
+                            news.setTime(dateFormat.format(publishTimeFormat.parse(timeWholeStr)));
+                        } catch (ParseException e) {
+                            log.error("[tencent] error parse publish time.", e);
+                            news.setTime(dateStr);
+                        }
                     }
                 }
             }
 
             //////////////////// set source ///////////////////////
-            int sourceStart = content.indexOf("id=\"ne_article_source\"");
+            int sourceStart = content.indexOf("\"media\": \"");
             if (sourceStart == -1) {
                 news.setSource("来源缺失");
             } else {
-                sourceStart = content.indexOf(">", sourceStart);
-                if (sourceStart == -1) {
+                int sourceEnd = content.indexOf("\"", sourceStart + 10);
+                if (sourceEnd == -1) {
                     news.setSource("来源缺失");
                 } else {
-                    int sourceEnd = content.indexOf("</", sourceStart);
-                    if (sourceEnd == -1) {
-                        news.setSource("来源缺失");
-                    } else {
-                        news.setSource(content.substring(sourceStart + 1, sourceEnd).trim());
-                    }
+                    news.setSource(content.substring(sourceStart + 10, sourceEnd).trim());
                 }
             }
 
             //////////////////// set  content ////////////////////
             //考虑到内容比较重要，若无法解析出正文则直接返回null
-            int articleStart = content.indexOf("id=\"endText\"");
+            int articleStart = content.indexOf("<div class=\"content-article\">");
             if (articleStart == -1) {
                 return null;
             } else {
-                articleStart = content.indexOf(">", articleStart);
-                if (articleStart == -1) {
+                int articleEnd = content.indexOf("<div id=\"Status\">", articleStart);
+                if (articleEnd == -1) {
                     return null;
                 } else {
-                    int articleEnd = content.indexOf("<div class=\"ep-source", articleStart);
-                    if (articleEnd == -1) {
+                    String con = cleanHTMLTag(content.substring(articleStart + 29, articleEnd));
+                    if (con == null) {
                         return null;
-                    } else {
-                        String con = cleanHTMLTag(content.substring(articleStart + 1, articleEnd));
-                        if (con == null) {
-                            return null;
-                        }
-                        news.setContent(con);
                     }
+                    news.setContent(con);
                 }
             }
 
             //////////////////// set keywords ////////////////////
-            news.setKeywords("");  //网易新闻没有关键词
+            int keywordStart = content.indexOf("\"tags\": \"");
+            if (keywordStart == -1) {
+                news.setKeywords("");
+            } else {
+                int keywordEnd = content.indexOf("\"", keywordStart + 9);
+                if (keywordEnd == -1) {
+                    news.setKeywords("");
+                } else {
+                    String keys = content.substring(keywordStart + 9, keywordEnd);
+                    keys = keys.replace(";", ",")
+                            .replace(",腾讯网,腾讯新闻", "");
+                    news.setKeywords(keys);
+                }
+            }
 
             /////////////////// set visitNum ///////////////////
             //TODO 暂时先设置为0
@@ -162,7 +170,7 @@ public class NeteaseConsumer extends ConsumerSpider {
 
             return news;
         } catch (Exception e) {
-            log.error("[netease] error when build news from html src.", e);
+            log.error("[tencent] error when build news from html src.", e);
         }
         return null;
     }

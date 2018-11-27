@@ -76,7 +76,7 @@ public class SouhuConsumer extends ConsumerSpider {
             //同时检查时间
             int timeStart = content.indexOf("id=\"news-time\"");
             if (timeStart == -1) {
-                news.setTitle(dateStr);
+                news.setTime(dateStr);
             } else {
                 timeStart = content.indexOf(">", timeStart);
                 if (timeStart == -1) {
